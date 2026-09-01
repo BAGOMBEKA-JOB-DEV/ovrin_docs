@@ -1,0 +1,24 @@
+---
+title: Module boundaries
+description: See how Ovrin keeps the core dependency-free and provider-specific code in separate modules.
+---
+
+# Module boundaries
+
+The upstream Ovrin repo is split into modules such as:
+
+- the core library
+- model adapters
+- OCR modules
+- renderer modules
+- observability modules
+- an example receipt module
+
+## Why this matters
+
+This keeps the root package zero-dependency in the core and ensures that only the modules you actually use affect your application’s dependency graph.
+
+## Related
+
+- [Architecture](/learn/architecture)
+- [Choosing a provider](/learn/choosing-a-provider)

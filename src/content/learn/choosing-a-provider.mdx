@@ -1,0 +1,29 @@
+---
+title: Choosing a provider
+description: Select the right model, OCR, or renderer for your Ovrin integration.
+---
+
+# Choosing a provider
+
+Ovrin is designed around provider seams rather than a single vendor dependency. In practice, you choose a model provider, an OCR provider, and optionally a renderer depending on your document types.
+
+## Model providers
+
+The model seam is responsible for producing structured output from document content. This is where LLM-backed providers fit.
+
+## OCR providers
+
+OCR handles the case where a document has no usable text layer or where a scanned or rasterized page needs recognition.
+
+## Renderer
+
+A renderer is used when a document must be rasterized before OCR or image-based reading.
+
+## Design principle
+
+The core library should not lock you into a single provider. The architecture is intentionally modular so you can switch providers without rewriting the extraction logic.
+
+## Related
+
+- [Installation](/learn/installation)
+- [Client setup](/learn/client-setup)

@@ -1,0 +1,20 @@
+---
+title: Threat model
+description: Learn how Ovrin protects extraction systems against hostile or malformed documents.
+---
+
+# Threat model
+
+Document extraction systems face risks from malformed files, hidden text, prompt-like content, and extraction traps. Ovrin addresses this by giving the system finite limits and making validation part of the result.
+
+## Core principles
+
+- treat input as untrusted
+- validate the output against the schema
+- detect values that are not grounded in the document
+- prefer explicit review over silent acceptance
+
+## Related
+
+- [Security and safety](/learn/security)
+- [Data handling](/learn/data-handling)

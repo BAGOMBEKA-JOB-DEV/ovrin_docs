@@ -1,0 +1,61 @@
+---
+title: Your first extraction
+description: Define a schema and call Extract to produce a typed result.
+---
+
+# Your first extraction
+
+The central idea of Ovrin is simple: define a Go struct that describes the data you want, then ask Ovrin to extract it from a document.
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Receipt struct {
+    Merchant string  `ovrin:"merchant name,required"`
+    Currency string  `ovrin:"currency code,required,enum=UGX|USD|EUR|GBP"`
+    Total    float64 `ovrin:"total amount including tax,required,min=0"`
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Receipt](context.Background(), client, ovrin.File("receipt.pdf"))
+    if err != nil {
+        panic(err)
+    }
+
+    if !res.Valid || res.NeedsReview {
+        fmt.Println("manual review required")
+        return
+    }
+
+    fmt.Println(res.Data.Merchant)
+    fmt.Println(res.Data.Total)
+}
+```
+
+## Result semantics
+
+The result includes both a structured payload and metadata about how trustworthy it is.
+
+Important rules:
+
+- `err != nil` means the extraction could not produce usable output
+- `res.Valid` tells you whether the data passed validation
+- `res.NeedsReview` tells you whether a human should inspect the result
+- missing values should stay absent instead of turning into zero values
+
+## Why this matters
+
+This is the core value proposition of Ovrin: you do not get a raw model answer and hope it is correct. You get a typed result with review markers, schema checks, and provenance.
+
+## Next
+
+- [Understanding the pipeline](/learn/pipeline)
+- [Schemas and validation](/learn/schemas)

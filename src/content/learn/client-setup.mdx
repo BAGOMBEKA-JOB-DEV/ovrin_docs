@@ -1,0 +1,36 @@
+---
+title: Setting up a client
+description: Wire your chosen providers into an Ovrin client and start extracting.
+---
+
+# Setting up a client
+
+The `Client` is where the provider strategy is assembled. It is not the extraction logic itself; it is the runtime configuration used by the pipeline.
+
+## Basic flow
+
+1. choose your model provider
+2. choose OCR and renderer if needed
+3. create the client with those providers
+4. call `Extract[T]`
+
+## Example
+
+```go
+client := ovrin.New(
+    ovrin.WithModel(model),
+    ovrin.WithOCR(ocr),
+    ovrin.WithRenderer(renderer),
+)
+```
+
+## Notes
+
+- provider modules are separated from the core
+- only the modules you need enter your dependency graph
+- extraction logic remains the same regardless of the provider behind the seam
+
+## Related
+
+- [Your first extraction](/learn/your-first-extraction)
+- [Choosing a provider](/learn/choosing-a-provider)

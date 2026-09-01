@@ -1,0 +1,27 @@
+---
+title: Provenance and review
+description: Trace extracted data back to source pages, boxes, and spans.
+---
+
+# Provenance and review
+
+Ovrin is built for reviewability. The upstream documentation makes this a first-class concern: values should point back to the location in the source document, not just appear as a floating number.
+
+## What provenance includes
+
+Depending on the pipeline stage, provenance may include:
+
+- page number
+- bounding box
+- text span
+- provider identity
+- OCR source or model source
+
+## Why review matters
+
+When a value is ambiguous or weak, the system should signal `NeedsReview` rather than silently forcing a result through. That is essential in financial or compliance-heavy workflows.
+
+## Related
+
+- [Confidence and explainability](/learn/confidence)
+- [When to route to review](/learn/review)

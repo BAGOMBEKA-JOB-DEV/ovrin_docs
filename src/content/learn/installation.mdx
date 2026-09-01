@@ -1,0 +1,39 @@
+---
+title: Installation
+description: Install Ovrin and add the modules you need for your chosen providers.
+---
+
+# Installation
+
+Ovrin is a Go library. The core package is intentionally dependency-light, and provider-specific packages live in separate modules.
+
+## Core package
+
+```bash
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin
+```
+
+This gives you the core extraction library. You then add exactly the extra modules you need for model access, OCR, rendering, or observability.
+
+## Provider modules
+
+```bash
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/model/skyl
+ go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/tesseract
+ go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/google
+ go get github.com/BAGOMBEKA-JOB-DEV/ovrin/render/pdfium
+ go get github.com/BAGOMBEKA-JOB-DEV/ovrin/otel
+```
+
+## Go version
+
+The project expects a modern Go toolchain. The upstream project states Go 1.22 or newer as the language floor.
+
+## Typical setup
+
+A real app usually installs the core plus the provider(s) it uses in production. The important design choice is that the core remains free of heavy dependencies and does not pull in a vendor SDK by default.
+
+## Next
+
+- [Choosing a provider](/learn/choosing-a-provider)
+- [Setting up a client](/learn/client-setup)

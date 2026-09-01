@@ -1,0 +1,21 @@
+---
+title: OCR and rasterization
+description: Fall back to OCR and rendering when the document is scanned or image-based.
+---
+
+# OCR and rasterization
+
+When a PDF or image lacks a usable text layer, Ovrin can rasterize the page and run OCR or image-based reading. This is where the rendering seam matters.
+
+## Why OCR is a fallback
+
+OCR is slower, noisier, and less precise than native text extraction, but it is essential for scanned documents and images.
+
+## Renderer seam
+
+The renderer is responsible for turning pages into images suitable for OCR or vision-based interpretation.
+
+## Related
+
+- [Understanding the pipeline](/learn/pipeline)
+- [Image and office inputs](/learn/image-office-inputs)

@@ -1,0 +1,26 @@
+---
+title: Tag grammar
+description: Understand how field tags define extraction intent and validation behavior.
+---
+
+# Tag grammar
+
+The upstream Ovrin docs describe schema tags as a structured grammar attached to Go struct fields. This defines how extraction should read, interpret, and validate each value.
+
+## Example
+
+```go
+type Invoice struct {
+    Number string `ovrin:"invoice number,required"`
+    Total  float64 `ovrin:"total amount including tax,required,min=0"`
+}
+```
+
+## Why tags matter
+
+They connect the document semantics to the Go type in a way that can be enforced at extraction time.
+
+## Related
+
+- [Schemas and validation](/learn/schemas)
+- [Validation rules](/reference/validation-rules)

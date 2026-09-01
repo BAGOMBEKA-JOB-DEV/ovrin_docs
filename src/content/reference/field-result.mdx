@@ -1,0 +1,29 @@
+---
+title: FieldResult
+description: Per-field outcome including value, presence, validation, and provenance.
+---
+
+# FieldResult
+
+Every field produced by the schema walk is tracked as a `FieldResult`, so the caller can inspect the exact outcome of each extraction.
+
+## Typical data
+
+A field result includes its value, whether it was found, provenance, and validation status. It is the basis for explainability and review.
+
+## Example
+
+```go
+field := res.Fields["total"]
+fmt.Println(field.Value)
+fmt.Println(field.Found)
+```
+
+## Why it matters
+
+This is how Ovrin supports explainability. Rather than returning a loose JSON object, it tells you whether a field was found, how it was derived, and how trustworthy it is.
+
+## Related
+
+- [Result[T]](/reference/result)
+- [Validation rules](/reference/validation-rules)

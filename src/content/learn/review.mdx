@@ -1,0 +1,27 @@
+---
+title: When to route to review
+description: Use Ovrin review signals to detect documents that need human validation.
+---
+
+# When to route to review
+
+A production document extraction workflow should not treat every successful parse as sufficiently trustworthy.
+
+## Review triggers
+
+Review should be triggered when:
+
+- validation rules fail
+- confidence is weak or inconsistent
+- evidence cannot be grounded in the source document
+- a field conflicts with another field in the same document
+- OCR or model output appears fabricated or suspicious
+
+## Result contract
+
+The `NeedsReview` flag is the product-level signal for this. It gives applications a clear decision point before entering downstream business logic.
+
+## Related
+
+- [Provenance and review](/learn/provenance)
+- [Threat model](/learn/threat-model)

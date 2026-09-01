@@ -1,0 +1,29 @@
+---
+title: Seams and interfaces
+description: Understand the model, OCR, and renderer seams that make Ovrin provider-independent.
+---
+
+# Seams and interfaces
+
+Ovrin’s architecture is built around three key seams: `Model`, `OCR`, and `Renderer`.
+
+## Model
+
+The model seam produces structured JSON from the document content. It is the part that turns document text and instructions into structured data.
+
+## OCR
+
+OCR recovers text and layout from rasterized pages. This is used when page content is not available natively.
+
+## Renderer
+
+The renderer turns a document page into an image suitable for OCR or visual analysis.
+
+## Why these seams are important
+
+This separation keeps the core free from provider-specific dependencies and lets you swap adapters without rewriting your extraction logic.
+
+## Related
+
+- [Architecture](/learn/architecture)
+- [Module boundaries](/learn/module-boundaries)

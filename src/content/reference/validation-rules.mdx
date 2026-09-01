@@ -1,0 +1,26 @@
+---
+title: Validation rules
+description: The schema constraints used to decide whether extracted values are acceptable.
+---
+
+# Validation rules
+
+Ovrin validates extracted fields against the rules implied by the schema and tag grammar. This is the main safeguard that prevents bad output from flowing silently downstream.
+
+## Examples of rules
+
+- required
+- enum
+- min
+- max
+- format-specific constraints
+- cross-field rules
+
+## Why they matter
+
+These rules are how the library turns vague extracted text into something that can be trusted in business logic or sent to a ledger or compliance workflow.
+
+## Related
+
+- [Schemas and validation](/learn/schemas)
+- [Cross-field checks](/learn/cross-field-checks)

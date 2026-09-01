@@ -1,0 +1,43 @@
+---
+title: Understanding the pipeline
+description: Learn the staged extraction flow that gives Ovrin its trust and explainability.
+---
+
+# Understanding the pipeline
+
+Ovrin does not treat document extraction as a single prompt. It uses a pipeline.
+
+## Pipeline stages
+
+The upstream architecture describes a document moving through stages such as:
+
+- format detection
+- text-layer extraction
+- OCR fallback when needed
+- rendering and rasterization
+- normalization
+- schema-driven extraction
+- validation
+- cross-field checks
+- grounding and provenance
+- confidence scoring
+
+## Why the pipeline matters
+
+This design allows Ovrin to do things a raw prompt cannot do reliably:
+
+- prefer exact text when present
+- fall back to OCR only as needed
+- detect fabricated values
+- validate numbers and enums
+- explain where a field came from
+- keep confidence decomposed and inspectable
+
+## A production mindset
+
+The pipeline is what makes Ovrin a document-processing system rather than a model wrapper. When the extracted number is a payment amount, a missing field, or a contradictory figure, the product needs more than a plausible answer. It needs provenance and validation.
+
+## Next
+
+- [Schemas and validation](/learn/schemas)
+- [Confidence and explainability](/learn/confidence)

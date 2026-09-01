@@ -1,0 +1,21 @@
+---
+title: Architecture
+description: Learn how Ovrin is structured internally and what the core dependency boundaries look like.
+---
+
+# Architecture
+
+The architecture is intentionally simple but strict. The core package defines the seams and orchestrates the flow, while provider-specific implementations live in separate modules.
+
+## Key structure
+
+The upstream project’s architecture documentation describes a root package with a set of core files and a set of internal packages for detection, schema parsing, validation, normalization, grounding, scoring, and provider integration.
+
+## The design principle
+
+The root package owns the orchestration and public types, while internal packages are implementation detail. That keeps the public API clear and the module boundaries clean.
+
+## Related
+
+- [Seams and interfaces](/learn/seams)
+- [Module boundaries](/learn/module-boundaries)

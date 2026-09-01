@@ -1,0 +1,38 @@
+---
+title: Schemas and validation
+description: Define the data contract with Go structs and validation tags.
+---
+
+# Schemas and validation
+
+The heart of Ovrin is the Go schema. You define the output as a Go struct, and Ovrin validates the extracted values against it.
+
+## Example
+
+```go
+type Invoice struct {
+    Number   string  `ovrin:"invoice number,required"`
+    Vendor   string  `ovrin:"vendor company name"`
+    Currency string  `ovrin:"currency code,required,enum=UGX|USD|EUR|GBP"`
+    Total    float64 `ovrin:"total amount including tax,required,min=0"`
+}
+```
+
+## Why schema validation matters
+
+This gives you a strict contract for fields such as:
+
+- required values
+- numeric ranges
+- enum constraints
+- format expectations
+- field presence semantics
+
+## Missing values and zero values
+
+A major design point in Ovrin is that an absent field is not the same as a zero value. That distinction matters when a value may legitimately be zero or when the system simply could not read it.
+
+## Related
+
+- [Validation](/learn/validation)
+- [Cross-field checks](/learn/cross-field-checks)
