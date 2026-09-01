@@ -19,6 +19,55 @@ const features = [
   },
 ];
 
+const keywordSet = new Set([
+  'package', 'import', 'type', 'struct', 'func', 'return', 'if', 'else', 'for', 'range',
+  'true', 'false', 'nil', 'var', 'const', 'case', 'switch', 'break', 'continue', 'go', 'defer',
+]);
+
+const typeSet = new Set(['string', 'float64', 'int', 'bool', '[]', 'map', 'error']);
+
+const builtinSet = new Set(['fmt', 'context', 'panic', 'println', 'printf', 'Println', 'Printf']);
+
+function highlightGoCode(sample: string) {
+  return sample.split('\n').map((line, lineIndex) => {
+    const tokens = line.match(/(".*?"|`.*?`|\/\/.*|\d+(?:\.\d+)?|[A-Za-z_][A-Za-z0-9_]*|[{}\[\](),.;:=+\-*/<>]|\s+)/g) ?? [line];
+
+    return (
+      <div key={`${lineIndex}-${line.slice(0, 12)}`} className="min-h-[1.5em]">
+        {tokens.map((token, tokenIndex) => {
+          if (/^\s+$/.test(token)) {
+            return <span key={`${lineIndex}-space-${tokenIndex}`} className="whitespace-pre">{token}</span>;
+          }
+
+          let colorClass = 'text-slate-200';
+
+          if (/^(?:\/\/.*|#.*)$/.test(token)) {
+            colorClass = 'text-slate-500';
+          } else if (/^(?:".*"|`.*`)$/.test(token)) {
+            colorClass = 'text-emerald-300';
+          } else if (/^\d+(?:\.\d+)?$/.test(token)) {
+            colorClass = 'text-amber-300';
+          } else if (keywordSet.has(token)) {
+            colorClass = 'text-pink-300';
+          } else if (typeSet.has(token)) {
+            colorClass = 'text-violet-300';
+          } else if (builtinSet.has(token)) {
+            colorClass = 'text-sky-300';
+          } else if (['{', '}', '(', ')', '[', ']', ',', ';', ':', '.'].includes(token)) {
+            colorClass = 'text-slate-400';
+          }
+
+          return (
+            <span key={`${lineIndex}-token-${tokenIndex}`} className={colorClass}>
+              {token}
+            </span>
+          );
+        })}
+      </div>
+    );
+  });
+}
+
 const codeSamples = [
   `package main
 
@@ -397,12 +446,12 @@ export default function HomePage() {
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
                   >
                     {codeSamples.map((sample, index) => (
-                      <pre
+                      <div
                         key={index}
-                        className="min-w-full overflow-x-auto whitespace-pre-wrap break-words p-3 font-mono text-[10px] leading-6 text-slate-100 sm:text-[11px]"
+                        className="min-w-full overflow-x-auto p-3 font-mono text-[10px] leading-6 text-slate-100 sm:text-[11px]"
                       >
-                        <code className="block min-h-[240px] whitespace-pre">{sample}</code>
-                      </pre>
+                        <code className="block min-h-[240px] whitespace-pre">{highlightGoCode(sample)}</code>
+                      </div>
                     ))}
                   </div>
                 </div>
