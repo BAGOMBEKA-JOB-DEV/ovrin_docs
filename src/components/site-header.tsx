@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -12,6 +12,26 @@ const navItems = [
 
 export function SiteHeader({ compact = false }: { compact?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileOpen(false);
+      }
+    };
+
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileOpen]);
 
   return (
     <header
@@ -82,8 +102,8 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
 
       <div
         className={[
-          'fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[320px] transform border-r border-slate-200 bg-[#f8f7f4] p-4 shadow-2xl transition-transform duration-300 ease-out md:hidden dark:border-slate-800 dark:bg-[#0d1625]',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+          'fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[320px] transform border-r border-slate-200 bg-[#f8f7f4] p-4 shadow-[0_24px_80px_rgba(15,23,42,0.28)] transition-transform duration-300 ease-out md:hidden dark:border-slate-800 dark:bg-[#0d1625]',
+          mobileOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0',
         ].join(' ')}
       >
         <div className="mb-5 flex items-center justify-between border-b border-slate-200 pb-4 dark:border-slate-800">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SiteHeader } from '@/components/site-header';
 import { sidebarCommunity, sidebarLearn, sidebarReference, trackForPath } from '@/sidebars';
@@ -31,6 +31,26 @@ export function DocsShell({
 }) {
   const sidebar = useSidebarForPath(currentPath);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSidebarOpen(false);
+      }
+    };
+
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [sidebarOpen]);
 
   return (
     <div className="min-h-screen bg-[#efefeb] text-slate-900 transition-colors duration-200 dark:bg-[#0b1220] dark:text-slate-100">
@@ -63,9 +83,9 @@ export function DocsShell({
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <aside
             className={[
-              'fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[320px] transform overflow-y-auto border-r border-slate-200 bg-[#f5f5f3] p-5 shadow-2xl transition-transform duration-300 ease-out dark:border-slate-800 dark:bg-[#101b2d] lg:static lg:z-auto lg:w-auto lg:max-w-none lg:translate-x-0 lg:rounded-[24px] lg:border lg:shadow-[0_12px_30px_rgba(15,23,42,0.04)]',
-              sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-              'lg:translate-x-0',
+              'fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[320px] transform overflow-y-auto border-r border-slate-200 bg-[#f5f5f3] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.28)] transition-transform duration-300 ease-out dark:border-slate-800 dark:bg-[#101b2d] lg:static lg:z-auto lg:w-auto lg:max-w-none lg:translate-x-0 lg:rounded-[24px] lg:border lg:shadow-[0_12px_30px_rgba(15,23,42,0.04)]',
+              sidebarOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0',
+              'lg:translate-x-0 lg:opacity-100',
             ].join(' ')}
           >
             <div className="mb-5 flex items-center justify-between border-b border-slate-200 pb-4 dark:border-slate-800 lg:border-none lg:pb-0">
