@@ -301,7 +301,7 @@ export default function HomePage() {
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIndex((current) => (current + 1) % codeSamples.length);
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, []);
@@ -344,10 +344,13 @@ export default function HomePage() {
                 </span>
                 <div className="flex items-center gap-2">
                   {codeSamples.map((_, index) => (
-                    <span
+                    <button
                       key={index}
+                      type="button"
+                      aria-label={`Go to sample ${index + 1}`}
+                      onClick={() => setActiveIndex(index)}
                       className={[
-                        'h-1.5 w-7 rounded-full transition-all',
+                        'h-1.5 w-7 rounded-full border-0 p-0 transition-all duration-300',
                         index === activeIndex ? 'bg-blue-500 dark:bg-cyan-400' : 'bg-slate-300 dark:bg-slate-700',
                       ].join(' ')}
                     />
@@ -373,19 +376,35 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 p-3 shadow-lg shadow-slate-900/10 dark:border-slate-700">
-                <div
-                  className="flex transition-transform duration-700 ease-out"
-                  style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-                >
-                  {codeSamples.map((sample, index) => (
-                    <pre
-                      key={index}
-                      className="min-w-full overflow-x-auto whitespace-pre-wrap break-words p-2 font-mono text-[10px] leading-6 text-slate-100 sm:text-[11px]"
-                    >
-                      <code className="block min-h-[220px]">{sample}</code>
-                    </pre>
-                  ))}
+              <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-lg shadow-slate-900/10 dark:border-slate-700">
+                <div className="flex items-center gap-2 border-b border-slate-700/80 bg-slate-900/80 px-3 py-2 text-[10px] text-slate-400">
+                  <div className="flex gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
+                  </div>
+                  <div className="ml-2 flex items-center gap-2 text-[9px] uppercase tracking-[0.18em] text-slate-500">
+                    <span>Sample</span>
+                    <span className="rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[8px] text-slate-300">
+                      {String(activeIndex + 1).padStart(2, '0')}/{String(codeSamples.length).padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="overflow-hidden">
+                  <div
+                    className="flex transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+                  >
+                    {codeSamples.map((sample, index) => (
+                      <pre
+                        key={index}
+                        className="min-w-full overflow-x-auto whitespace-pre-wrap break-words p-3 font-mono text-[10px] leading-6 text-slate-100 sm:text-[11px]"
+                      >
+                        <code className="block min-h-[240px] whitespace-pre">{sample}</code>
+                      </pre>
+                    ))}
+                  </div>
                 </div>
               </div>
             </aside>
