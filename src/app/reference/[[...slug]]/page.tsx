@@ -1,3 +1,5 @@
+import { marked } from 'marked';
+import { DocsShell } from '@/components/docs-shell';
 import { getDoc, resolveContentFile } from '@/lib/content';
 import { flattenSidebar, sidebarReference } from '@/sidebars';
 
@@ -17,16 +19,11 @@ export default async function ReferencePage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const route = routeFor(slug);
   const doc = getDoc(route);
+  const html = marked.parse(doc.body, { breaks: true, gfm: true });
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
-      <h1 className="text-4xl font-bold tracking-tight">{doc.frontmatter.title}</h1>
-      {doc.frontmatter.description ? (
-        <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">{doc.frontmatter.description}</p>
-      ) : null}
-      <article className="prose prose-slate mt-10 max-w-none dark:prose-invert">
-        <div dangerouslySetInnerHTML={{ __html: doc.body }} />
-      </article>
-    </main>
+    <DocsShell title={doc.frontmatter.title} description={doc.frontmatter.description} currentPath={route}>
+      <article className="article-content" dangerouslySetInnerHTML={{ __html: String(html) }} />
+    </DocsShell>
   );
 }
