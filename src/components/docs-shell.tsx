@@ -29,12 +29,12 @@ export function DocsShell({
   const sidebar = useSidebarForPath(currentPath);
 
   return (
-    <div className="min-h-screen bg-transparent text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-[#efefeb] text-slate-900 transition-colors duration-200 dark:bg-[#0b1220] dark:text-slate-100">
       <SiteHeader />
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8">
-        <aside className="rounded-[26px] border border-slate-200 bg-white/80 p-5 shadow-[0_20px_40px_rgba(15,23,42,0.03)] backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
-          <div className="mb-5 text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+        <aside className="rounded-[24px] border border-slate-200 bg-[#f5f5f3] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d]">
+          <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
             Navigation
           </div>
 
@@ -46,7 +46,7 @@ export function DocsShell({
               <ul className="space-y-1.5">
                 {section.items.map((item) => (
                   <li key={item.path}>
-                    <div className={currentPath === item.path ? 'rounded-xl border border-blue-200 bg-blue-50 text-slate-900 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-white' : 'rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800/80'}>
+                    <div className={currentPath === item.path ? 'rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white' : 'rounded-xl text-slate-600 hover:bg-slate-200/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white'}>
                       <Link href={item.path} className="block px-3 py-2 text-sm font-medium">
                         {item.title}
                       </Link>
@@ -60,8 +60,8 @@ export function DocsShell({
                               href={child.path}
                               className={
                                 currentPath === child.path
-                                  ? 'block rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm text-slate-900 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-white'
-                                  : 'block rounded-lg px-3 py-1.5 text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100'
+                                  ? 'block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white'
+                                  : 'block rounded-lg px-3 py-1.5 text-sm text-slate-500 hover:bg-slate-200/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100'
                               }
                             >
                               {child.title}
@@ -77,9 +77,9 @@ export function DocsShell({
           ))}
         </aside>
 
-        <main className="rounded-[26px] border border-slate-200 bg-white/80 p-6 shadow-[0_20px_40px_rgba(15,23,42,0.03)] backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80 sm:p-8">
+        <main className="rounded-[24px] border border-slate-200 bg-[#f7f7f5] p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d] sm:p-8">
           <div className="max-w-3xl">
-            <div className="mb-4 text-[11px] font-medium uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
+            <div className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
               Documentation
             </div>
             <h1 className="text-4xl font-black tracking-[-0.06em] text-slate-950 dark:text-white sm:text-5xl">

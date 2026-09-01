@@ -18,11 +18,11 @@ const features = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-transparent text-slate-900 dark:text-slate-100">
+    <main className="min-h-screen bg-[#efefeb] text-slate-900 transition-colors duration-200 dark:bg-[#0b1220] dark:text-slate-100">
       <SiteHeader />
 
       <div className="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
-        <section className="overflow-hidden rounded-[30px] border border-slate-200/80 bg-white/80 shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur-sm dark:border-slate-800/80 dark:bg-slate-900/80">
+        <section className="overflow-hidden rounded-[30px] border border-slate-200 bg-[#f9f8f6] shadow-[0_24px_60px_rgba(15,23,42,0.06)] backdrop-blur-sm dark:border-slate-800/80 dark:bg-slate-900/80">
           <div className="grid gap-10 px-5 pb-8 pt-8 sm:px-8 lg:grid-cols-[1.2fr_0.8fr] lg:px-10 lg:pb-10 lg:pt-12">
             <div className="flex flex-col justify-between">
               <div>
