@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import HomePage from '@/app/page';
+import { SiteFooter } from '@/components/site-footer';
 
 describe('HomePage', () => {
   it('renders the hero content and primary actions', () => {
@@ -12,7 +13,7 @@ describe('HomePage', () => {
   });
 
   it('renders the footer credit', () => {
-    render(<HomePage />);
+    render(<SiteFooter />);
 
     expect(screen.getByText(/developed and maintained by/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /bagombeka job/i })).toHaveAttribute('href', 'https://github.com/BAGOMBEKA-JOB-DEV');
