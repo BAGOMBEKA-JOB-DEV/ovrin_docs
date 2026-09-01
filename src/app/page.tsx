@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SiteHeader } from '@/components/site-header';
 
@@ -16,7 +19,342 @@ const features = [
   },
 ];
 
+const keywordSet = new Set([
+  'package', 'import', 'type', 'struct', 'func', 'return', 'if', 'else', 'for', 'range',
+  'true', 'false', 'nil', 'var', 'const', 'case', 'switch', 'break', 'continue', 'go', 'defer',
+]);
+
+const typeSet = new Set(['string', 'float64', 'int', 'bool', '[]', 'map', 'error']);
+
+const builtinSet = new Set(['fmt', 'context', 'panic', 'println', 'printf', 'Println', 'Printf']);
+
+function highlightGoCode(sample: string) {
+  return sample.split('\n').map((line, lineIndex) => {
+    const tokens = line.match(/(".*?"|`.*?`|\/\/.*|\d+(?:\.\d+)?|[A-Za-z_][A-Za-z0-9_]*|[{}\[\](),.;:=+\-*/<>]|\s+)/g) ?? [line];
+
+    return (
+      <div key={`${lineIndex}-${line.slice(0, 12)}`} className="min-h-[1.5em]">
+        {tokens.map((token, tokenIndex) => {
+          if (/^\s+$/.test(token)) {
+            return <span key={`${lineIndex}-space-${tokenIndex}`} className="whitespace-pre">{token}</span>;
+          }
+
+          let colorClass = 'text-slate-200';
+
+          if (/^(?:\/\/.*|#.*)$/.test(token)) {
+            colorClass = 'text-slate-500';
+          } else if (/^(?:".*"|`.*`)$/.test(token)) {
+            colorClass = 'text-emerald-300';
+          } else if (/^\d+(?:\.\d+)?$/.test(token)) {
+            colorClass = 'text-amber-300';
+          } else if (keywordSet.has(token)) {
+            colorClass = 'text-pink-300';
+          } else if (typeSet.has(token)) {
+            colorClass = 'text-violet-300';
+          } else if (builtinSet.has(token)) {
+            colorClass = 'text-sky-300';
+          } else if (['{', '}', '(', ')', '[', ']', ',', ';', ':', '.'].includes(token)) {
+            colorClass = 'text-slate-400';
+          }
+
+          return (
+            <span key={`${lineIndex}-token-${tokenIndex}`} className={colorClass}>
+              {token}
+            </span>
+          );
+        })}
+      </div>
+    );
+  });
+}
+
+const codeSamples = [
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Invoice struct {
+    Number   string  ` + '`ovrin:"invoice number,required"`' + `
+    Vendor   string  ` + '`ovrin:"vendor company name"`' + `
+    Currency string  ` + '`ovrin:"currency code,required,enum=UGX|USD|EUR|GBP"`' + `
+    Total    float64 ` + '`ovrin:"total amount including tax,required,min=0"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Invoice](context.Background(), client, ovrin.File("invoice.pdf"))
+    if err != nil { panic(err) }
+
+    fmt.Println(res.Valid, res.NeedsReview)
+    fmt.Printf("%+.2f\n", res.Data.Total)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Receipt struct {
+    Merchant string  ` + '`ovrin:"merchant name,required"`' + `
+    Date     string  ` + '`ovrin:"transaction date,required"`' + `
+    Total    float64 ` + '`ovrin:"total amount,required,min=0"`' + `
+    Currency string  ` + '`ovrin:"currency,required,enum=UGX|USD|EUR|GBP"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Receipt](context.Background(), client, ovrin.File("receipt.jpg"))
+    if err != nil { panic(err) }
+
+    if !res.Valid || res.NeedsReview {
+        fmt.Println("manual review required")
+        return
+    }
+
+    fmt.Println(res.Data.Merchant, res.Data.Total)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type ClientSetup struct {
+    Vendor string ` + '`ovrin:"vendor name,required"`' + `
+    Tax    float64 ` + '`ovrin:"tax amount,min=0"`' + `
+}
+
+func main() {
+    model := MyModel{}
+    ocr := MyOCR{}
+    renderer := MyRenderer{}
+
+    client := ovrin.New(
+        ovrin.WithModel(model),
+        ovrin.WithOCR(ocr),
+        ovrin.WithRenderer(renderer),
+    )
+
+    res, err := ovrin.Extract[ClientSetup](context.Background(), client, ovrin.File("invoice.pdf"))
+    if err != nil { panic(err) }
+    fmt.Println(res.Data.Vendor, res.Data.Tax)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type BankStatement struct {
+    Account string  ` + '`ovrin:"account number,required"`' + `
+    Balance float64 ` + '`ovrin:"closing balance,required,min=0"`' + `
+    Date    string  ` + '`ovrin:"statement date,required"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+
+    res, err := ovrin.Extract[BankStatement](context.Background(), client, ovrin.File("statement.pdf"))
+    if err != nil { panic(err) }
+
+    if res.NeedsReview {
+        for _, reason := range res.Reasons {
+            fmt.Println(reason)
+        }
+    }
+
+    fmt.Println(res.Data.Balance)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Contract struct {
+    PartyA string ` + '`ovrin:"first party name,required"`' + `
+    PartyB string ` + '`ovrin:"second party name,required"`' + `
+    Value  float64 ` + '`ovrin:"contract value,required,min=0"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Contract](context.Background(), client, ovrin.File("contract.pdf"))
+    if err != nil { panic(err) }
+
+    if res.Valid {
+        fmt.Println("contract accepted")
+    } else {
+        fmt.Println("validation failed; review required")
+    }
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Form struct {
+    Name      string ` + '`ovrin:"full name,required"`' + `
+    Email     string ` + '`ovrin:"email address,required"`' + `
+    Country   string ` + '`ovrin:"country code,required,enum=UGX|USD|EUR|GBP"`' + `
+    Signature bool   ` + '`ovrin:"signature present,required"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Form](context.Background(), client, ovrin.File("form.pdf"))
+    if err != nil { panic(err) }
+
+    if !res.Valid {
+        fmt.Println("schema invalid")
+        return
+    }
+
+    fmt.Println(res.Data.Name, res.Data.Email)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Claim struct {
+    ClaimID   string  ` + '`ovrin:"claim id,required"`' + `
+    Amount    float64 ` + '`ovrin:"claim amount,required,min=0"`' + `
+    Currency  string  ` + '`ovrin:"currency code,required"`' + `
+    Approved bool    ` + '`ovrin:"approval status"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Claim](context.Background(), client, ovrin.File("claim.pdf"))
+    if err != nil { panic(err) }
+
+    if res.NeedsReview {
+        fmt.Println("manual review required before payout")
+    }
+
+    fmt.Println(res.Data.ClaimID, res.Data.Amount)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type InvoiceLine struct {
+    SKU       string  ` + '`ovrin:"item code,required"`' + `
+    Quantity  int     ` + '`ovrin:"quantity,required,min=1"`' + `
+    UnitPrice float64 ` + '`ovrin:"unit price,required,min=0"`' + `
+}
+
+type PurchaseOrder struct {
+    Number string        ` + '`ovrin:"purchase order number,required"`' + `
+    Lines  []InvoiceLine ` + '`ovrin:"line items,required"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[PurchaseOrder](context.Background(), client, ovrin.File("po.pdf"))
+    if err != nil { panic(err) }
+
+    for _, line := range res.Data.Lines {
+        fmt.Println(line.SKU, line.Quantity, line.UnitPrice)
+    }
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Patient struct {
+    Name     string ` + '`ovrin:"patient name,required"`' + `
+    Date     string ` + '`ovrin:"visit date,required"`' + `
+    Amount   float64 ` + '`ovrin:"amount due,required,min=0"`' + `
+    Covered  bool    ` + '`ovrin:"insurance coverage"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Patient](context.Background(), client, ovrin.File("claim.pdf"))
+    if err != nil { panic(err) }
+
+    fmt.Println("Confidence:", res.Confidence)
+    fmt.Println("Needs review:", res.NeedsReview)
+    fmt.Println(res.Data.Name, res.Data.Amount)
+}`,
+  `package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Payroll struct {
+    Employee string ` + '`ovrin:"employee name,required"`' + `
+    Month    string ` + '`ovrin:"pay period,required"`' + `
+    Gross    float64 ` + '`ovrin:"gross pay,required,min=0"`' + `
+    Net      float64 ` + '`ovrin:"net pay,required,min=0"`' + `
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Payroll](context.Background(), client, ovrin.File("payroll.pdf"))
+    if err != nil { panic(err) }
+
+    if !res.Valid {
+        fmt.Println("payroll validation failed")
+        return
+    }
+
+    fmt.Printf("%s earned %.2f net\n", res.Data.Employee, res.Data.Net)
+}`
+];
+
 export default function HomePage() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((current) => (current + 1) % codeSamples.length);
+    }, 8000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#efefeb] text-slate-900 transition-colors duration-200 dark:bg-[#0b1220] dark:text-slate-100">
       <SiteHeader />
@@ -53,6 +391,20 @@ export default function HomePage() {
                 <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                   Extraction
                 </span>
+                <div className="flex items-center gap-2">
+                  {codeSamples.map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      aria-label={`Go to sample ${index + 1}`}
+                      onClick={() => setActiveIndex(index)}
+                      className={[
+                        'h-1.5 w-7 rounded-full border-0 p-0 transition-all duration-300',
+                        index === activeIndex ? 'bg-blue-500 dark:bg-cyan-400' : 'bg-slate-300 dark:bg-slate-700',
+                      ].join(' ')}
+                    />
+                  ))}
+                </div>
               </div>
 
               <div className="mt-6 space-y-4">
@@ -73,13 +425,36 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-950 p-4 font-mono text-sm leading-7 text-slate-100 shadow-lg shadow-slate-900/10 dark:border-slate-700">
-                <span className="text-sky-300">type</span> Invoice <span className="text-sky-300">struct</span> {'{'}
-                <br />
-                <span className="ml-4 text-slate-200">Total</span> <span className="text-sky-300">float64</span>{' '}
-                <span className="text-amber-300">{`ovrin:&quot;total amount including tax,required,min=0&quot;`}</span>
-                <br />
-                {'}'}
+              <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-lg shadow-slate-900/10 dark:border-slate-700">
+                <div className="flex items-center gap-2 border-b border-slate-700/80 bg-slate-900/80 px-3 py-2 text-[10px] text-slate-400">
+                  <div className="flex gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
+                  </div>
+                  <div className="ml-2 flex items-center gap-2 text-[9px] uppercase tracking-[0.18em] text-slate-500">
+                    <span>Sample</span>
+                    <span className="rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[8px] text-slate-300">
+                      {String(activeIndex + 1).padStart(2, '0')}/{String(codeSamples.length).padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="overflow-hidden">
+                  <div
+                    className="flex transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+                  >
+                    {codeSamples.map((sample, index) => (
+                      <div
+                        key={index}
+                        className="min-w-full overflow-x-auto p-3 font-mono text-[10px] leading-6 text-slate-100 sm:text-[11px]"
+                      >
+                        <code className="block min-h-[240px] whitespace-pre">{highlightGoCode(sample)}</code>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </aside>
           </div>
@@ -96,19 +471,6 @@ export default function HomePage() {
         </section>
       </div>
 
-      <footer className="border-t border-slate-200 bg-[#f3f1ee]/80 py-6 text-center text-sm text-slate-600 dark:border-slate-800 dark:bg-[#0d1625]/80 dark:text-slate-300">
-        <p>
-          Developed and maintained by{' '}
-          <a
-            href="https://github.com/BAGOMBEKA-JOB-DEV"
-            target="_blank"
-            rel="noreferrer"
-            className="font-semibold text-slate-900 underline-offset-4 hover:underline dark:text-white"
-          >
-            Bagombeka Job
-          </a>
-        </p>
-      </footer>
     </main>
   );
 }
