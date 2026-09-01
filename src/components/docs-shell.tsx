@@ -51,16 +51,34 @@ export function DocsShell({
           </span>
         </div>
 
+        {sidebarOpen ? (
+          <button
+            type="button"
+            aria-label="Close sidebar"
+            className="fixed inset-0 z-30 bg-slate-950/35 backdrop-blur-[1px] lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        ) : null}
+
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <aside
             className={[
-              'rounded-[24px] border border-slate-200 bg-[#f5f5f3] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d]',
-              sidebarOpen ? 'block' : 'hidden',
-              'lg:block',
+              'fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[320px] transform overflow-y-auto border-r border-slate-200 bg-[#f5f5f3] p-5 shadow-2xl transition-transform duration-300 ease-out dark:border-slate-800 dark:bg-[#101b2d] lg:static lg:z-auto lg:w-auto lg:max-w-none lg:translate-x-0 lg:rounded-[24px] lg:border lg:shadow-[0_12px_30px_rgba(15,23,42,0.04)]',
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+              'lg:translate-x-0',
             ].join(' ')}
           >
-            <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              Navigation
+            <div className="mb-5 flex items-center justify-between border-b border-slate-200 pb-4 dark:border-slate-800 lg:border-none lg:pb-0">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                Navigation
+              </div>
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 lg:hidden"
+              >
+                ✕
+              </button>
             </div>
 
             {sidebar.map((section) => (
@@ -107,7 +125,7 @@ export function DocsShell({
             ))}
           </aside>
 
-          <main className="rounded-[24px] border border-slate-200 bg-[#f7f7f5] p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d] sm:p-8">
+          <main className="rounded-[24px] border border-slate-200 bg-[#f7f7f5] p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d] sm:p-8 lg:rounded-[24px]">
             <div className="max-w-3xl">
               <div className="mb-4 hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300 lg:block">
                 Documentation

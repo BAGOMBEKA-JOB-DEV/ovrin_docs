@@ -72,35 +72,61 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       </div>
 
       {mobileOpen ? (
-        <div className="border-t border-slate-200 bg-[#f8f7f4] px-4 py-4 md:hidden dark:border-slate-800 dark:bg-[#0d1625]">
-          <nav aria-label="Mobile navigation" className="flex flex-col gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
-
-            <a
-              href="https://github.com/BAGOMBEKA-JOB-DEV/ovrin"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            >
-              GitHub
-            </a>
-
-            <div className="mt-1 flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Theme</span>
-              <ThemeToggle />
-            </div>
-          </nav>
-        </div>
+        <button
+          type="button"
+          aria-label="Close mobile menu"
+          className="fixed inset-0 z-30 bg-slate-950/35 backdrop-blur-[1px] md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       ) : null}
+
+      <div
+        className={[
+          'fixed inset-y-0 left-0 z-40 w-[82vw] max-w-[320px] transform border-r border-slate-200 bg-[#f8f7f4] p-4 shadow-2xl transition-transform duration-300 ease-out md:hidden dark:border-slate-800 dark:bg-[#0d1625]',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+        ].join(' ')}
+      >
+        <div className="mb-5 flex items-center justify-between border-b border-slate-200 pb-4 dark:border-slate-800">
+          <span className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+            Menu
+          </span>
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setMobileOpen(false)}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav aria-label="Mobile navigation" className="flex flex-col gap-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className="rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-200 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+            >
+              {item.label}
+            </Link>
+          ))}
+
+          <a
+            href="https://github.com/BAGOMBEKA-JOB-DEV/ovrin"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          >
+            GitHub
+          </a>
+
+          <div className="mt-2 flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Theme</span>
+            <ThemeToggle />
+          </div>
+        </nav>
+      </div>
     </header>
   );
 }
