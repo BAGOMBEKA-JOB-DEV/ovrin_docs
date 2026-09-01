@@ -1,42 +1,85 @@
 import Link from 'next/link';
 
+const features = [
+  {
+    title: 'Typed output',
+    text: 'One Go struct. One reliable contract. No loose map leaks into your data pipeline.',
+  },
+  {
+    title: 'Pipeline-first',
+    text: 'Text layer first, OCR on demand, validation and grounding built in from the start.',
+  },
+  {
+    title: 'Explainable',
+    text: 'Every value can point back to page, source, and signal so review is never a guess.',
+  },
+];
+
 export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col justify-center px-6 py-16">
-      <div className="mb-8 inline-flex w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-        Ovrin documentation
-      </div>
+    <main className="hero-page">
+      <div className="hero-wrap">
+        <header className="hero-topbar">
+          <div className="brand-wrap">
+            <div className="brand-mark">O</div>
+            <div>
+              <div className="brand-name">ovrin</div>
+              <div className="brand-tag">docs</div>
+            </div>
+          </div>
 
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-        Turn documents into typed Go data.
-      </h1>
+          <nav className="hero-nav" aria-label="Main navigation">
+            <Link href="/learn">Learn</Link>
+            <Link href="/reference/extract">Reference</Link>
+            <Link href="/community/contributing">Community</Link>
+          </nav>
+        </header>
 
-      <p className="mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-        Ovrin reads PDFs, scans, images, and structured office files, then returns a typed Go struct with validation, provenance, and review signals.
-      </p>
+        <section className="hero-panel">
+          <div className="hero-copy">
+            <span className="eyebrow">Document extraction for Go teams</span>
+            <h1>Turn documents into trusted structured data.</h1>
+            <p>
+              Ovrin reads PDFs, scans, images, and office files, then returns typed Go values with validation,
+              provenance, and reviewability built in.
+            </p>
 
-      <div className="mt-10 flex flex-wrap gap-4">
-        <Link href="/learn" className="rounded-md bg-slate-900 px-5 py-3 font-medium text-white dark:bg-slate-100 dark:text-slate-900">
-          Explore Learn
-        </Link>
-        <Link href="/reference/extract" className="rounded-md border border-slate-300 px-5 py-3 font-medium text-slate-900 dark:border-slate-700 dark:text-slate-100">
-          View API reference
-        </Link>
-      </div>
+            <div className="hero-actions">
+              <Link href="/learn" className="primary-button">Read the guide</Link>
+              <Link href="/reference/extract" className="secondary-button">API reference</Link>
+            </div>
+          </div>
 
-      <div className="mt-16 grid gap-6 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 p-5 dark:border-slate-800">
-          <h2 className="text-lg font-semibold">Typed output</h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Go structs instead of loose maps.</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 p-5 dark:border-slate-800">
-          <h2 className="text-lg font-semibold">Pipeline-first</h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Text layer first, OCR only when needed.</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 p-5 dark:border-slate-800">
-          <h2 className="text-lg font-semibold">Explainable</h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Confidence, provenance, and review pathways are built in.</p>
-        </div>
+          <div className="hero-card">
+            <div className="mini-label">Extraction</div>
+            <div className="stat-row">
+              <span className="stat-label">Valid</span>
+              <span className="stat-value">99.2%</span>
+            </div>
+            <div className="bar-line"><span /></div>
+            <div className="stat-row">
+              <span className="stat-label">Grounded</span>
+              <span className="stat-value">18/20</span>
+            </div>
+            <div className="code-block">
+              <span className="code-keyword">type</span> Invoice <span className="code-keyword">struct</span> {'{'}
+              <br />
+              &nbsp;&nbsp;Total <span className="code-keyword">float64</span> {'`ovrin:"total amount including tax,required,min=0"`'}
+              <br />
+              {'}'}
+            </div>
+          </div>
+        </section>
+
+        <section className="feature-grid">
+          {features.map((feature) => (
+            <article key={feature.title} className="feature-card">
+              <div className="feature-flag" />
+              <h2>{feature.title}</h2>
+              <p>{feature.text}</p>
+            </article>
+          ))}
+        </section>
       </div>
     </main>
   );
