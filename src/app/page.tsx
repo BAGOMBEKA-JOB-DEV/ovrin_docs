@@ -301,7 +301,7 @@ export default function HomePage() {
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIndex((current) => (current + 1) % codeSamples.length);
-    }, 2400);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, []);
@@ -375,15 +375,15 @@ export default function HomePage() {
 
               <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 p-3 shadow-lg shadow-slate-900/10 dark:border-slate-700">
                 <div
-                  className="flex transition-transform duration-500 ease-out"
+                  className="flex transition-transform duration-700 ease-out"
                   style={{ transform: `translateX(-${activeIndex * 100}%)` }}
                 >
                   {codeSamples.map((sample, index) => (
                     <pre
                       key={index}
-                      className="min-w-full overflow-x-auto whitespace-pre-wrap break-words p-2 font-mono text-[11px] leading-6 text-slate-100"
+                      className="min-w-full overflow-x-auto whitespace-pre-wrap break-words p-2 font-mono text-[10px] leading-6 text-slate-100 sm:text-[11px]"
                     >
-                      <code>{sample}</code>
+                      <code className="block min-h-[220px]">{sample}</code>
                     </pre>
                   ))}
                 </div>
