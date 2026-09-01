@@ -106,19 +106,27 @@ Before running this project locally, make sure you have:
    npm install
    ```
 
-3. Start the development server:
+3. Configure environment variables:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Update the site URL if needed for your environment.
+
+4. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-4. Open the project in your browser:
+5. Open the project in your browser:
 
    ```text
    http://localhost:3000
    ```
 
-## Production build
+## Production build and deployment
 
 To create a production build:
 
@@ -131,6 +139,14 @@ To run the production build locally:
 ```bash
 npm run start
 ```
+
+For deployment, set the production site URL in the hosting environment:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://your-domain.example.com
+```
+
+This project is configured for static export (`output: 'export'`) and is suitable for deployment to hosts such as Vercel, Netlify, or a static web host.
 
 ## Quality checks
 
