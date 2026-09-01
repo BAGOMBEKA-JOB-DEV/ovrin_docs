@@ -1,0 +1,45 @@
+---
+title: Extract[T]
+description: Extract typed data from a document using Ovrin.
+---
+
+# Extract[T]
+
+`Extract[T]` is the central API entry point for Ovrin. It accepts a document source and returns a typed result plus validation and review metadata.
+
+## Signature
+
+```go
+func Extract[T any](ctx context.Context, client *Client, source Source, opts ...Option) (Result[T], error)
+```
+
+## What it does
+
+It reads the document, decides what kind of input it is, uses the text layer if available, falls back to OCR or rendering when required, normalizes content, validates it against a Go schema, and returns a typed result.
+
+## Example
+
+```go
+res, err := ovrin.Extract[Invoice](ctx, client, ovrin.File("invoice.pdf"))
+if err != nil {
+    return err
+}
+
+if !res.Valid || res.NeedsReview {
+    return fmt.Errorf("manual review needed")
+}
+
+fmt.Println(res.Data.Total)
+```
+
+## Important caveats
+
+- `err` and `Valid` are not the same thing
+- a result may be non-nil and still fail validation
+- a field may be absent instead of zero-valued
+
+## Related
+
+- [Client](/reference/client)
+- [Result[T]](/reference/result)
+- [FieldResult](/reference/field-result)

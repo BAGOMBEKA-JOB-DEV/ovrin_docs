@@ -1,0 +1,73 @@
+---
+title: Overview
+description: What Ovrin is, why it exists, and how it differs from a generic PDF-to-JSON prompt flow.
+---
+
+# Ovrin
+
+Ovrin turns documents into structured Go data. It is designed for cases where a value matters — for example invoices, receipts, forms, contracts, transcripts, or bank statements — and where the extracted data must be typed, validated, and explainable.
+
+## Why it exists
+
+Most document workflows are built around the idea of “send a PDF to a model and parse the JSON.” That is fast to prototype, but it is not enough for production use. The important questions are not only what value was returned, but also:
+
+- was it actually grounded in the document?
+- how confident are we in it?
+- did the model invent a value?
+- can we trace it back to a page or region?
+- was the result valid against the schema?
+
+Ovrin addresses these problems by using a staged extraction pipeline rather than a single monolithic prompt.
+
+## The product model
+
+The core design is built around a few ideas:
+
+- typed output instead of loose maps
+- document content treated as untrusted input
+- text-layer extraction first, OCR only when needed
+- validation and grounding as part of the result
+- provider independence via model, OCR, and renderer seams
+
+## A simple example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+)
+
+type Invoice struct {
+    Number   string  `ovrin:"invoice number,required"`
+    Vendor   string  `ovrin:"vendor company name"`
+    Currency string  `ovrin:"currency code,required,enum=UGX|USD|EUR|GBP"`
+    Total    float64 `ovrin:"total amount including tax,required,min=0"`
+}
+
+func main() {
+    client := ovrin.New()
+    res, err := ovrin.Extract[Invoice](context.Background(), client, ovrin.File("invoice.pdf"))
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Println(res.Valid)
+    fmt.Println(res.Data.Total)
+    fmt.Println(res.NeedsReview)
+}
+```
+
+## What Ovrin is not
+
+Ovrin is not “just prompt a model with a PDF.” It is a pipeline designed for trustworthy extraction: reading, validating, scoring, grounding, and explaining the output.
+
+## Next steps
+
+- [Installation](/learn/installation)
+- [Your first extraction](/learn/your-first-extraction)
+- [Understanding the pipeline](/learn/pipeline)
+- [Schemas and validation](/learn/schemas)

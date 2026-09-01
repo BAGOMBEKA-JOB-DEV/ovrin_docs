@@ -1,0 +1,17 @@
+---
+title: PDF and text layers
+description: Prefer native PDF text extraction when available before falling back to OCR.
+---
+
+# PDF and text layers
+
+Ovrin strongly prefers native text extraction when the PDF already contains a text layer. This is faster and more precise than OCR because it comes directly from the document content rather than from an image interpretation pass.
+
+## Why this matters
+
+Text-layer extraction is high quality and cheap. It keeps the extraction pipeline accurate and reduces unnecessary OCR work.
+
+## Related
+
+- [Understanding the pipeline](/learn/pipeline)
+- [OCR and rasterization](/learn/ocr-rasterization)

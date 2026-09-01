@@ -1,0 +1,24 @@
+---
+title: Security and safety
+description: Treat documents as untrusted input and build a safety mindset around extraction.
+---
+
+# Security and safety
+
+Ovrin is built with a safety-first mindset: documents are treated as untrusted input, not as trusted instructions.
+
+## Why this matters
+
+A malicious or malformed document can attempt to manipulate model instructions, confuse formatting, or exploit weak assumptions. Ovrin’s design accounts for that by constraining the extraction flow and validating what it sees.
+
+## Typical concerns
+
+- prompt injection attempts
+- resource exhaustion
+- malformed or adversarial input
+- untrusted content being mistaken for instructions
+
+## Related
+
+- [Threat model](/learn/threat-model)
+- [Data handling](/learn/data-handling)

@@ -1,0 +1,27 @@
+---
+title: Signals and scoring
+description: Understand how Ovrin decomposes a result into named scoring signals.
+---
+
+# Signals and scoring
+
+Ovrin’s confidence model is built from multiple named signals. That is different from a single opaque model score.
+
+## Typical signals
+
+The upstream docs describe signals such as:
+
+- grounding
+- OCR agreement
+- schema validity
+- format compliance
+- cross-field agreement
+
+## Why this is important
+
+It lets you inspect the answer instead of merely trusting a score. If a value is high confidence because it matches the schema but low confidence because it is not grounded, the system can expose that fact.
+
+## Related
+
+- [Confidence and explainability](/learn/confidence)
+- [Cross-field checks](/learn/cross-field-checks)

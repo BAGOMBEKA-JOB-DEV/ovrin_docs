@@ -1,0 +1,18 @@
+---
+title: Model
+description: The model adapter interface that turns document content into structured data.
+---
+
+# Model
+
+The `Model` seam is the interface that produces structured output from a document or document-derived context.
+
+## Purpose
+
+This interface separates the extraction pipeline from a specific model provider. A model implementation can be an OpenAI adapter, a Gemini adapter, or another provider implementation.
+
+## Related
+
+- [OCR](/reference/ocr)
+- [Renderer](/reference/renderer)
+- [Client](/reference/client)

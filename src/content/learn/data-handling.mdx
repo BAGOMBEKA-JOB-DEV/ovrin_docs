@@ -1,0 +1,17 @@
+---
+title: Data handling
+description: Understand what leaves the extraction process and when third-party services are involved.
+---
+
+# Data handling
+
+Ovrin is designed to make data handling explicit. The upstream docs treat this as a key part of the architecture because in document-processing workflows, documents may contain sensitive or regulated information.
+
+## Why this is important
+
+A document pipeline can send data to a model provider, OCR provider, or renderer. The system should make that flow obvious and reviewable.
+
+## Related
+
+- [Security and safety](/learn/security)
+- [Threat model](/learn/threat-model)

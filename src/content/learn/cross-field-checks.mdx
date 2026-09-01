@@ -1,0 +1,23 @@
+---
+title: Cross-field checks
+description: Use multiple derived values to validate the extraction result.
+---
+
+# Cross-field checks
+
+Ovrin does not only validate fields independently. It also checks whether values agree with one another across a document.
+
+## Common examples
+
+- line items sum to the total
+- tax matches the subtotal and invoice total
+- values align with a known document pattern
+
+## Why this matters
+
+Two fields may individually look plausible while still not making sense as a set. Cross-field checks catch contradictions that a single field validator would miss.
+
+## Related
+
+- [Schemas and validation](/learn/schemas)
+- [Confidence and explainability](/learn/confidence)

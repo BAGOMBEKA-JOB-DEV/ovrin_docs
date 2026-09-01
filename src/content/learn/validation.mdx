@@ -1,0 +1,27 @@
+---
+title: Required and absent values
+description: Understand the difference between a missing value and a valid zero or empty value.
+---
+
+# Required and absent values
+
+In document extraction, a missing value is not the same as a zero or empty value. Ovrin treats this difference as part of the API contract.
+
+## Why this matters
+
+For data records such as totals, amounts, or identifiers, a zero is a valid value in some contexts while a missing value may mean the value was never detected or was too ambiguous to accept.
+
+## Result semantics
+
+- `res.Valid` is about whether the extracted result passed validation rules
+- `err != nil` means the extraction could not produce a usable result
+- some fields may be absent even while the outer result is still meaningful
+
+## Design principle
+
+Being explicit about missing values prevents silent data corruption and supports safer downstream processing.
+
+## Related
+
+- [Schemas and validation](/learn/schemas)
+- [Cross-field checks](/learn/cross-field-checks)

@@ -1,0 +1,26 @@
+---
+title: Rules
+description: Engineering principles and design rules that govern the Ovrin codebase.
+---
+
+# Rules
+
+The Ovrin project is shaped by explicit engineering rules. These are not minor preferences; they are part of the architecture.
+
+## Key rules
+
+- the core package must remain dependency-light
+- documents are untrusted input by default
+- the model, OCR, and renderer seams are separate
+- confidence should be explainable and decomposed
+- missing values should not be silently turned into zeros
+- public APIs should be boring, predictable, and Go-idiomatic
+
+## Why this matters
+
+These rules are what keep the library reliable in production, especially when the cost of a wrong extracted value is high.
+
+## Related
+
+- [Contributing](/community/contributing)
+- [Roadmap](/community/roadmap)

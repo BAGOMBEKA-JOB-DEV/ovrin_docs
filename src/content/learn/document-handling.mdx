@@ -1,0 +1,27 @@
+---
+title: Document handling
+description: Understand which input types Ovrin supports and how it handles them.
+---
+
+# Document handling
+
+Ovrin is designed to handle a wide range of document inputs, including PDFs, images, scanned files, and office documents.
+
+## Supported inputs
+
+The upstream project describes support for:
+
+- PDFs with a text layer
+- PNG, JPEG, TIFF
+- scanned PDFs
+- DOCX, XLSX, CSV
+
+## Handling model
+
+The product does not hardcode a single document type. It treats receipts, invoices, bank statements, transcripts, and contracts as similar extraction problems expressed as typed Go schemas.
+
+## Related
+
+- [PDF and text layers](/learn/pdf-text-layers)
+- [OCR and rasterization](/learn/ocr-rasterization)
+- [Image and office inputs](/learn/image-office-inputs)

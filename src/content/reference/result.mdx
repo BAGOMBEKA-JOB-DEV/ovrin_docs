@@ -1,0 +1,50 @@
+---
+title: Result[T]
+description: The output type returned by an extraction.
+---
+
+# Result[T]
+
+`Result[T]` carries the typed data together with validation state, confidence, provenance, and review signals.
+
+## Shape
+
+```go
+type Result[T any] struct {
+    Data        T
+    Valid       bool
+    Confidence  float64
+    Fields      map[string]FieldResult
+    NeedsReview bool
+    Reasons     []ReviewReason
+    Metadata    Metadata
+}
+```
+
+## Usage
+
+```go
+res, err := ovrin.Extract[Invoice](ctx, client, ovrin.File("invoice.pdf"))
+if err != nil {
+    return err
+}
+
+if !res.Valid {
+    fmt.Println("Schema or validation checks failed")
+}
+
+if res.NeedsReview {
+    fmt.Println("Manual review recommended")
+}
+```
+
+## Important semantics
+
+- `err != nil` is not the same as `!Valid`
+- a field that could not be read should remain absent, not silently zero-valued
+- confidence and review reasons are part of the result contract
+
+## Related
+
+- [Extract[T]](/reference/extract)
+- [FieldResult](/reference/field-result)

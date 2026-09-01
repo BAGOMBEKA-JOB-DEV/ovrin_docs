@@ -1,0 +1,31 @@
+---
+title: Confidence and explainability
+description: Learn how Ovrin scores results and exposes evidence behind the values it returns.
+---
+
+# Confidence and explainability
+
+One of Ovrin’s strongest product claims is that confidence is not just a single opaque number. It is broken into named signals and tied to provenance.
+
+## Why this design matters
+
+An extracted total is not just “0.98 confidence.” The system can explain which signals contributed to that confidence, such as:
+
+- grounding in the source document
+- OCR agreement
+- schema fit
+- format parsing quality
+- cross-field consistency
+
+## Explainability
+
+Each field can point back to where it was found in the document. This supports human review, auditing, and debugging of false positives.
+
+## Important caveat
+
+Confidence is a ranking signal, not a guarantee. Upstream Ovrin docs explicitly note that confidence weights are provisional and should not be treated as a probability claim without calibration.
+
+## Related
+
+- [Provenance and review](/learn/provenance)
+- [Signals and scoring](/learn/signals)

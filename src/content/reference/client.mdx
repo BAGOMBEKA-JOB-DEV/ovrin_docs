@@ -1,0 +1,41 @@
+---
+title: Client
+description: Create and configure an Ovrin client for document extraction.
+---
+
+# Client
+
+The `Client` owns the model, OCR, renderer, and runtime configuration used during an extraction.
+
+## Construction
+
+```go
+client := ovrin.New(opts...)
+```
+
+## Purpose
+
+A client is the shared runtime policy for extraction. It is the place where the document-processing pipeline is configured and scoped.
+
+## Example
+
+```go
+client := ovrin.New(
+    ovrin.WithModel(model),
+    ovrin.WithOCR(ocr),
+    ovrin.WithRenderer(renderer),
+)
+```
+
+## Notes
+
+- the core keeps provider boundaries explicit
+- the client is safe for reuse
+- provider selection is intentionally separated from the extraction logic
+
+## Related
+
+- [Extract[T]](/reference/extract)
+- [Model](/reference/model)
+- [OCR](/reference/ocr)
+- [Renderer](/reference/renderer)
