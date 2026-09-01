@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { SiteHeader } from '@/components/site-header';
 import { sidebarCommunity, sidebarLearn, sidebarReference, trackForPath } from '@/sidebars';
@@ -27,69 +30,97 @@ export function DocsShell({
   children: React.ReactNode;
 }) {
   const sidebar = useSidebarForPath(currentPath);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#efefeb] text-slate-900 transition-colors duration-200 dark:bg-[#0b1220] dark:text-slate-100">
       <SiteHeader />
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8">
-        <aside className="rounded-[24px] border border-slate-200 bg-[#f5f5f3] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d]">
-          <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-            Navigation
-          </div>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mb-4 flex items-center justify-between lg:hidden">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((open) => !open)}
+            className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          >
+            {sidebarOpen ? 'Hide sections' : 'Show sections'}
+          </button>
 
-          {sidebar.map((section) => (
-            <div key={section.title} className="mb-7 last:mb-0">
-              <div className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-                {section.title}
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
+            Documentation
+          </span>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside
+            className={[
+              'rounded-[24px] border border-slate-200 bg-[#f5f5f3] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d]',
+              sidebarOpen ? 'block' : 'hidden',
+              'lg:block',
+            ].join(' ')}
+          >
+            <div className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              Navigation
+            </div>
+
+            {sidebar.map((section) => (
+              <div key={section.title} className="mb-7 last:mb-0">
+                <div className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+                  {section.title}
+                </div>
+                <ul className="space-y-1.5">
+                  {section.items.map((item) => (
+                    <li key={item.path}>
+                      <div className={currentPath === item.path ? 'rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white' : 'rounded-xl text-slate-600 hover:bg-slate-200/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white'}>
+                        <Link
+                          href={item.path}
+                          onClick={() => setSidebarOpen(false)}
+                          className="block px-3 py-2 text-sm font-medium"
+                        >
+                          {item.title}
+                        </Link>
+                      </div>
+
+                      {item.children?.length ? (
+                        <ul className="mt-1.5 space-y-1 pl-3">
+                          {item.children.map((child) => (
+                            <li key={child.path}>
+                              <Link
+                                href={child.path}
+                                onClick={() => setSidebarOpen(false)}
+                                className={
+                                  currentPath === child.path
+                                    ? 'block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white'
+                                    : 'block rounded-lg px-3 py-1.5 text-sm text-slate-500 hover:bg-slate-200/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100'
+                                }
+                              >
+                                {child.title}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-1.5">
-                {section.items.map((item) => (
-                  <li key={item.path}>
-                    <div className={currentPath === item.path ? 'rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white' : 'rounded-xl text-slate-600 hover:bg-slate-200/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/80 dark:hover:text-white'}>
-                      <Link href={item.path} className="block px-3 py-2 text-sm font-medium">
-                        {item.title}
-                      </Link>
-                    </div>
+            ))}
+          </aside>
 
-                    {item.children?.length ? (
-                      <ul className="mt-1.5 space-y-1 pl-3">
-                        {item.children.map((child) => (
-                          <li key={child.path}>
-                            <Link
-                              href={child.path}
-                              className={
-                                currentPath === child.path
-                                  ? 'block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white'
-                                  : 'block rounded-lg px-3 py-1.5 text-sm text-slate-500 hover:bg-slate-200/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100'
-                              }
-                            >
-                              {child.title}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
+          <main className="rounded-[24px] border border-slate-200 bg-[#f7f7f5] p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d] sm:p-8">
+            <div className="max-w-3xl">
+              <div className="mb-4 hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300 lg:block">
+                Documentation
+              </div>
+              <h1 className="text-4xl font-black tracking-[-0.06em] text-slate-950 dark:text-white sm:text-5xl">
+                {title}
+              </h1>
+              {description ? <p className="mt-3 text-lg text-slate-600 dark:text-slate-300">{description}</p> : null}
             </div>
-          ))}
-        </aside>
 
-        <main className="rounded-[24px] border border-slate-200 bg-[#f7f7f5] p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-[#101b2d] sm:p-8">
-          <div className="max-w-3xl">
-            <div className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
-              Documentation
-            </div>
-            <h1 className="text-4xl font-black tracking-[-0.06em] text-slate-950 dark:text-white sm:text-5xl">
-              {title}
-            </h1>
-            {description ? <p className="mt-3 text-lg text-slate-600 dark:text-slate-300">{description}</p> : null}
-          </div>
-
-          <div className="mt-8 max-w-3xl">{children}</div>
-        </main>
+            <div className="mt-8 max-w-3xl">{children}</div>
+          </main>
+        </div>
       </div>
     </div>
   );

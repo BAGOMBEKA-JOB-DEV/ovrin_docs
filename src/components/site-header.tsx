@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -8,6 +11,8 @@ const navItems = [
 ];
 
 export function SiteHeader({ compact = false }: { compact?: boolean }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header
       className={[
@@ -49,9 +54,53 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
           >
             GitHub
           </a>
-          <ThemeToggle />
+
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
+
+          <button
+            type="button"
+            aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((open) => !open)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-base text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white md:hidden"
+          >
+            {mobileOpen ? '✕' : '☰'}
+          </button>
         </div>
       </div>
+
+      {mobileOpen ? (
+        <div className="border-t border-slate-200 bg-[#f8f7f4] px-4 py-4 md:hidden dark:border-slate-800 dark:bg-[#0d1625]">
+          <nav aria-label="Mobile navigation" className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <a
+              href="https://github.com/BAGOMBEKA-JOB-DEV/ovrin"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              GitHub
+            </a>
+
+            <div className="mt-1 flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Theme</span>
+              <ThemeToggle />
+            </div>
+          </nav>
+        </div>
+      ) : null}
     </header>
   );
 }
