@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import GithubSlugger from 'github-slugger';
+import { codeToHtml } from 'shiki';
+import { marked } from 'marked';
 
 const CONTENT_ROOT = path.join(process.cwd(), 'src', 'content');
 
@@ -77,6 +79,22 @@ export function getDoc(route: string): Doc {
     body: content,
     headings: extractHeadings(content),
   };
+}
+
+export async function renderMarkdownWithHighlight(markdown: string): Promise<string> {
+  const codeFencePattern = /```([a-zA-Z0-9_-]+)?\n([\s\S]*?)```/g;
+  let highlighted = markdown;
+
+  for (const match of Array.from(markdown.matchAll(codeFencePattern))) {
+    const [, language = 'text', code] = match;
+    const replacement = await codeToHtml(code, {
+      lang: language,
+      theme: 'github-dark',
+    });
+    highlighted = highlighted.replace(match[0], replacement);
+  }
+
+  return String(marked.parse(highlighted, { breaks: true, gfm: true }));
 }
 
 export function listAllContentRoutes(): string[] {

@@ -1,6 +1,5 @@
-import { marked } from 'marked';
 import { DocsShell } from '@/components/docs-shell';
-import { getDoc, resolveContentFile } from '@/lib/content';
+import { getDoc, renderMarkdownWithHighlight, resolveContentFile } from '@/lib/content';
 import { flattenSidebar, sidebarCommunity } from '@/sidebars';
 
 export function generateStaticParams() {
@@ -19,11 +18,11 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const route = routeFor(slug);
   const doc = getDoc(route);
-  const html = marked.parse(doc.body, { breaks: true, gfm: true });
+  const html = await renderMarkdownWithHighlight(doc.body);
 
   return (
     <DocsShell title={doc.frontmatter.title} description={doc.frontmatter.description} currentPath={route}>
-      <article className="article-content" dangerouslySetInnerHTML={{ __html: String(html) }} />
+      <article className="article-content" dangerouslySetInnerHTML={{ __html: html }} />
     </DocsShell>
   );
 }
