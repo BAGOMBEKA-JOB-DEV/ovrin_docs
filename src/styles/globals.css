@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Tailwind v4 defaults the dark: variant to prefers-color-scheme. ThemeToggle
+   drives a .dark class on <html>, so the variant is redefined to match it. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand-50: #f5f7ff;
   --color-brand-100: #edf3ff;

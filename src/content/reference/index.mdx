@@ -1,0 +1,52 @@
+---
+title: API reference
+description: The Ovrin public API — entry points, result types, provider seams, and configuration.
+---
+
+# API reference
+
+Everything Ovrin exports lives in one package at the module root. Provider implementations live in
+their own modules, so the surface here is the whole contract: what you call, what you get back, and
+what you implement if you are writing an adapter.
+
+## Start here
+
+If you are extracting a document for the first time, three pages cover it:
+
+- [Extract[T]](/reference/extract) — the entry point
+- [Client](/reference/client) — how you configure providers and limits
+- [Result[T]](/reference/result) — what comes back, and how to read it
+
+## Core API
+
+| Page | What it covers |
+| --- | --- |
+| [Extract[T]](/reference/extract) | The generic entry point, its options, and its two failure channels. |
+| [Client](/reference/client) | `New`, provider options, and per-call overrides. |
+| [Result[T]](/reference/result) | Typed data alongside validation state, confidence, and review flags. |
+| [FieldResult](/reference/field-result) | One field and the evidence for it — presence, signals, provenance, candidates. |
+
+## The provider seams
+
+Three small interfaces, and no vendor is privileged. Implement one to add a provider; the core never
+learns its name.
+
+| Page | Seam |
+| --- | --- |
+| [Model](/reference/model) | Turns document content plus a JSON schema into structured output. |
+| [OCR](/reference/ocr) | Reads a rasterised page into words, lines, and positions. |
+| [Renderer](/reference/renderer) | Rasterises a page for OCR or vision. Optional — most extractions never need one. |
+
+## Schema and rules
+
+| Page | What it covers |
+| --- | --- |
+| [Tag grammar](/reference/schema-tags) | The `ovrin:"…"` struct tag — descriptions and the closed rule vocabulary. |
+| [Validation rules](/reference/validation-rules) | What each rule checks and what a failure does. |
+| [Provider matrix](/reference/provider-matrix) | What each provider supports, rejects, and silently ignores. |
+
+## A note on stability
+
+Ovrin is pre-v1 and no release is tagged. The API will change before v1.0. The upstream repository
+keeps a generated record of the public surface in `api/ovrin.txt`, so every change to it is a visible
+line in a diff that somebody had to intend.

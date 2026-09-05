@@ -1,6 +1,6 @@
 # Ovrin Docs
 
-A polished documentation website for Ovrin, built with Next.js and MDX. This repository contains the public-facing docs experience for the Ovrin ecosystem, helping developers understand the product, install it, explore the API, and integrate it into real document-processing workflows.
+A polished documentation website for Ovrin, built with Next.js. Content is authored as Markdown and rendered at build time with `marked` and Shiki. This repository contains the public-facing docs experience for the Ovrin ecosystem, helping developers understand the product, install it, explore the API, and integrate it into real document-processing workflows.
 
 ## Overview
 
@@ -38,13 +38,14 @@ This project uses:
 - Next.js 15
 - React 19
 - TypeScript
-- MDX
+- Markdown content (`marked` + `gray-matter`)
+- Shiki syntax highlighting
 - Tailwind CSS
 - App Router
 
 ## Features
 
-- MDX-based documentation content
+- Markdown documentation content, rendered and highlighted at build time
 - route-based docs organization
 - learning, reference, and community sections
 - sidebar navigation and docs-shell layout
@@ -61,27 +62,36 @@ ovrin_docs/
 │   ├── app/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
-│   │   └── ...route pages
+│   │   ├── loading.tsx
+│   │   ├── icon.svg
+│   │   ├── robots.ts
+│   │   ├── sitemap.ts
+│   │   └── {learn,reference,community}/[[...slug]]/page.tsx
 │   ├── components/
 │   │   ├── docs-shell.tsx
 │   │   ├── site-header.tsx
+│   │   ├── site-footer.tsx
 │   │   ├── theme-toggle.tsx
-│   │   └── ui/
+│   │   ├── ui/button.tsx
+│   │   └── __tests__/
 │   ├── content/
 │   │   ├── learn/
 │   │   ├── reference/
 │   │   └── community/
-│   ├── lib/
-│   ├── sidebars/
+│   ├── lib/          # content loading, markdown rendering, theme bootstrap
+│   ├── sidebars/     # hand-maintained navigation trees
 │   ├── styles/
 │   └── config/
-├── package.json
+├── .github/workflows/ci.yml
+├── .env.example
+├── eslint.config.mjs
+├── vitest.config.ts
 ├── next.config.mjs
 ├── postcss.config.mjs
 ├── tsconfig.json
+├── package.json
 ├── LICENSE
-├── README.md
-└── docs-plan.md
+└── README.md
 ```
 
 ## Prerequisites
@@ -134,10 +144,11 @@ To create a production build:
 npm run build
 ```
 
-To run the production build locally:
+To preview the production build locally, serve the exported files. `next start` does not
+work with `output: 'export'`, so serve `out/` with any static file server:
 
 ```bash
-npm run start
+npx serve out
 ```
 
 For deployment, set the production site URL in the hosting environment:
@@ -161,6 +172,14 @@ Run TypeScript validation:
 ```bash
 npm run typecheck
 ```
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+CI runs all four — lint, typecheck, test, build — on every push and pull request.
 
 ## Documentation structure
 

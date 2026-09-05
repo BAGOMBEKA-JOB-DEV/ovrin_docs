@@ -5,33 +5,61 @@ description: Install Ovrin and add the modules you need for your chosen provider
 
 # Installation
 
-Ovrin is a Go library. The core package is intentionally dependency-light, and provider-specific packages live in separate modules.
+Ovrin is a Go library. The core module has zero external dependencies and uses no cgo, so it
+cross-compiles and builds static. Provider-specific code lives in separate modules, so you pull in
+only the vendors you actually use.
 
-## Core package
+## Before you start: no release is tagged yet
 
-```bash
-go get github.com/BAGOMBEKA-JOB-DEV/ovrin
-```
-
-This gives you the core extraction library. You then add exactly the extra modules you need for model access, OCR, rendering, or observability.
-
-## Provider modules
+Ovrin is pre-v1 and **no version has been tagged**. The `go get` commands you would expect will not
+resolve yet, and the API will change before v1.0. Until a release exists, build from a checkout.
 
 ```bash
-go get github.com/BAGOMBEKA-JOB-DEV/ovrin/model/skyl
- go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/tesseract
- go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/google
- go get github.com/BAGOMBEKA-JOB-DEV/ovrin/render/pdfium
- go get github.com/BAGOMBEKA-JOB-DEV/ovrin/otel
+git clone https://github.com/BAGOMBEKA-JOB-DEV/ovrin.git
 ```
+
+Then point your module at that checkout with a `replace` directive:
+
+```go
+// go.mod
+require github.com/BAGOMBEKA-JOB-DEV/ovrin v0.0.0
+
+replace github.com/BAGOMBEKA-JOB-DEV/ovrin => ../ovrin
+```
+
+This is the same arrangement the provider modules use among themselves while the repository is
+untagged.
+
+## The modules
+
+The core gives you `Client`, `Extract`, the three provider seams, and the whole pipeline. Everything
+else is optional and lives in its own module with its own dependencies.
+
+| Module | What it gives you |
+| --- | --- |
+| `ovrin` | The core library. Zero dependencies, no cgo. |
+| `ovrin/model/skyl` | The `Model` seam over OpenAI, Gemini, Ollama, and OpenAI-compatible hosts. |
+| `ovrin/ocr/google` | OCR via Google Cloud Vision. Standard library only. |
+| `ovrin/ocr/tesseract` | Local, offline OCR. Tesseract compiled to WebAssembly, so still no cgo. |
+| `ovrin/ocr/azure` | OCR via Azure AI Document Intelligence. Reports table structure. |
+| `ovrin/ocr/textract` | OCR via Amazon Textract. Standard library only, SigV4 included. |
+| `ovrin/render/pdfium` | The `Renderer` seam. PDFium under WebAssembly, for rasterising PDF pages. |
+| `ovrin/otel` | Turns Ovrin hooks into OpenTelemetry spans and metrics. |
+
+Once releases are tagged, each module is versioned independently on a path-prefixed tag, and each
+declares its own Go floor.
 
 ## Go version
 
-The project expects a modern Go toolchain. The upstream project states Go 1.22 or newer as the language floor.
+The core module declares `go 1.22` as its language floor. Because Ovrin hands untrusted document
+bytes to `archive/zip`, `encoding/xml`, `compress/flate`, and `image/*`, build with a current patch
+release rather than the oldest toolchain that compiles.
 
-## Typical setup
+## What you actually need
 
-A real app usually installs the core plus the provider(s) it uses in production. The important design choice is that the core remains free of heavy dependencies and does not pull in a vendor SDK by default.
+Most extractions need only the core plus a model adapter. You need a renderer only when you are
+running OCR locally against a scanned PDF: a cloud OCR provider that accepts a PDF rasterises it
+server-side, and image inputs never need rasterising at all.
 
 ## Next
 

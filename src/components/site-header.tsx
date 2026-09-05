@@ -6,8 +6,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 const navItems = [
   { href: '/learn', label: 'Learn' },
-  { href: '/reference/extract', label: 'Reference' },
-  { href: '/community/contributing', label: 'Community' },
+  { href: '/reference', label: 'Reference' },
+  { href: '/community', label: 'Community' },
 ];
 
 export function SiteHeader({ compact = false }: { compact?: boolean }) {

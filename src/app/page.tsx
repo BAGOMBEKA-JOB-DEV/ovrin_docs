@@ -4,6 +4,13 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SiteHeader } from '@/components/site-header';
 
+const resultCarries = [
+  { name: 'Valid', what: 'whether every validation rule passed' },
+  { name: 'Confidence', what: 'decomposed into named signals' },
+  { name: 'Provenance', what: 'the page and region each value came from' },
+  { name: 'NeedsReview', what: 'whether a person should look first' },
+];
+
 const features = [
   {
     title: 'Typed output',
@@ -407,22 +414,20 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
-                  <span>Valid</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">99.2%</span>
-                </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                  <div className="h-full w-[78%] rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" />
-                </div>
-
-                <div className="flex items-center justify-between pt-2 text-sm text-slate-600 dark:text-slate-300">
-                  <span>Grounded</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">18/20</span>
-                </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                  <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-indigo-500 to-sky-400" />
-                </div>
+              <div className="mt-6 space-y-3">
+                <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                  Every result carries
+                </p>
+                {resultCarries.map((item) => (
+                  <div key={item.name} className="flex items-baseline justify-between gap-4">
+                    <code className="font-mono text-[13px] font-semibold text-blue-600 dark:text-cyan-400">
+                      {item.name}
+                    </code>
+                    <span className="text-right text-xs leading-snug text-slate-600 dark:text-slate-300">
+                      {item.what}
+                    </span>
+                  </div>
+                ))}
               </div>
 
               <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-lg shadow-slate-900/10 dark:border-slate-700">

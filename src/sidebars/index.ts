@@ -1,7 +1,7 @@
 import { sidebarLearn } from './learn';
 import { sidebarReference } from './reference';
 import { sidebarCommunity } from './community';
-import { flattenSidebar, type Sidebar } from './types';
+import type { Sidebar } from './types';
 
 export { sidebarLearn, sidebarReference, sidebarCommunity };
 export * from './types';
@@ -15,14 +15,7 @@ export const tracks: Record<TrackId, { label: string; sidebar: Sidebar; root: st
 };
 
 export function trackForPath(path: string): TrackId | undefined {
-  if (path === '/learn' || path.startsWith('/learn/')) return 'learn';
-  if (path === '/reference' || path.startsWith('/reference/')) return 'reference';
-  if (path === '/community' || path.startsWith('/community/')) return 'community';
-  return undefined;
-}
-
-export function allRoutes(): string[] {
-  return Object.values(tracks).flatMap((track) =>
-    flattenSidebar(track.sidebar).map((item) => item.path),
+  return (Object.keys(tracks) as TrackId[]).find(
+    (id) => path === tracks[id].root || path.startsWith(`${tracks[id].root}/`),
   );
 }
