@@ -48,7 +48,7 @@ export const sidebarLearn: Sidebar = [
         path: '/learn/schemas',
         description: 'Write Go structs, tag fields, and enforce validation rules.',
         children: [
-          { title: 'Tag grammar', path: '/learn/schema-tags' },
+          { title: 'Tag grammar', path: '/reference/schema-tags' },
           { title: 'Required and absent values', path: '/learn/validation' },
           { title: 'Cross-field checks', path: '/learn/cross-field-checks' },
         ],
@@ -85,7 +85,7 @@ export const sidebarLearn: Sidebar = [
         children: [
           { title: 'Seams and interfaces', path: '/learn/seams' },
           { title: 'Module boundaries', path: '/learn/module-boundaries' },
-          { title: 'Deployment and release status', path: '/learn/release-status' },
+          { title: 'Release status', path: '/community/release-status' },
         ],
       },
       {

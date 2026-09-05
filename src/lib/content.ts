@@ -10,10 +10,6 @@ const CONTENT_ROOT = path.join(process.cwd(), 'src', 'content');
 export interface Frontmatter {
   title: string;
   description?: string;
-  badge?: string;
-  noCopy?: boolean;
-  date?: string;
-  author?: string;
 }
 
 export interface Doc {
@@ -83,18 +79,33 @@ export function getDoc(route: string): Doc {
 
 export async function renderMarkdownWithHighlight(markdown: string): Promise<string> {
   const codeFencePattern = /```([a-zA-Z0-9_-]+)?\n([\s\S]*?)```/g;
-  let highlighted = markdown;
+
+  // Rebuild the string positionally. A string-argument String.replace would
+  // substitute the first occurrence rather than this one, so two identical
+  // fences in a file would render wrongly, and `$&` sequences in Shiki's
+  // output would be treated as replacement patterns.
+  let out = '';
+  let cursor = 0;
 
   for (const match of Array.from(markdown.matchAll(codeFencePattern))) {
-    const [, language = 'text', code] = match;
-    const replacement = await codeToHtml(code, {
-      lang: language,
-      theme: 'github-dark',
-    });
-    highlighted = highlighted.replace(match[0], replacement);
+    const [full, language = 'text', code = ''] = match;
+    const start = match.index ?? 0;
+
+    let replacement: string;
+    try {
+      replacement = await codeToHtml(code, { lang: language, theme: 'github-dark' });
+    } catch {
+      // An unlabelled or unknown fence language should not fail the build.
+      replacement = await codeToHtml(code, { lang: 'text', theme: 'github-dark' });
+    }
+
+    out += markdown.slice(cursor, start) + replacement;
+    cursor = start + full.length;
   }
 
-  return String(marked.parse(highlighted, { breaks: true, gfm: true }));
+  out += markdown.slice(cursor);
+
+  return String(marked.parse(out, { breaks: true, gfm: true }));
 }
 
 export function listAllContentRoutes(): string[] {

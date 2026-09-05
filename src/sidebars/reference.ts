@@ -5,6 +5,11 @@ export const sidebarReference: Sidebar = [
     title: 'Core API',
     items: [
       {
+        title: 'API reference',
+        path: '/reference',
+        description: 'The public surface, and where to start.',
+      },
+      {
         title: 'Extract[T]',
         path: '/reference/extract',
         description: 'Extract typed data from a file or document source.',

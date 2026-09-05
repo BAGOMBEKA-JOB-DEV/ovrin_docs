@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { siteConfig } from '@/config/site';
 import { SiteFooter } from '@/components/site-footer';
+import { themeInitScript } from '@/lib/theme';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -35,6 +36,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <div className="min-h-screen">{children}</div>
         <SiteFooter />

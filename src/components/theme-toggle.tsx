@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-const THEME_KEY = 'ovrin-theme';
+import { THEME_KEY } from '@/lib/theme';
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);

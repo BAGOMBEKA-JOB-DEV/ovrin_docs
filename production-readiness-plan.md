@@ -10,21 +10,24 @@ Turn the Ovrin docs project into a launch-ready, production-quality documentatio
 
 - [x] Remove localhost-only defaults from config and metadata
 - [x] Add environment-based site URL configuration
-- [x] Add favicon asset
-- [x] Add robots and sitemap routes
+- [x] Add favicon asset — moved to `src/app/icon.svg` so it is actually linked in `<head>`
+- [x] Add robots and sitemap routes — sitemap now derives from the content tree
 - [x] Add environment example file
 
 ### Remaining tasks
 
-- [ ] Confirm site metadata is consistent across the full app shell
+- [x] Confirm site metadata is consistent across the full app shell — every docs route now has
+      `generateMetadata`, so each page carries its own title, description, and Open Graph tags
 - [ ] Validate deployment assumptions for static export and host platform
 
 ## Phase 2 — Content quality and accuracy
 
-### Status: pending
+### Status: in progress
 
 - [ ] Review all docs content against the real Ovrin backend repository
-- [ ] Verify code examples are accurate and copy-pasteable
+- [~] Verify code examples are accurate and copy-pasteable — the installation and first-extraction
+      pages are corrected and the first-extraction example is verified to compile against the
+      upstream checkout; the remaining fences are not yet audited
 - [ ] Ensure terminology matches the upstream project exactly
 - [ ] Remove weak or generic phrasing from onboarding pages
 - [ ] Tighten the reference pages to match actual API contracts
@@ -33,6 +36,8 @@ Turn the Ovrin docs project into a launch-ready, production-quality documentatio
 
 ### Status: pending
 
+- [x] Dark mode actually responds to the theme toggle (Tailwind v4 `@custom-variant`), and no
+      longer flashes light on load
 - [ ] Final polish on landing-page hierarchy and spacing
 - [ ] Final pass on docs page typography and rhythm
 - [ ] Final pass on code-block styling and syntax consistency
@@ -54,10 +59,20 @@ Turn the Ovrin docs project into a launch-ready, production-quality documentatio
 ### Status: pending
 
 - [ ] Run final full test suite
-- [ ] Run lint, typecheck, and build together
-- [ ] Review final README and onboarding commands
+- [x] Run lint, typecheck, and build together — CI runs all four, and they pass locally
+- [x] Review final README and onboarding commands — `npm run start` is invalid under
+      `output: 'export'`; corrected to serving `out/`
 - [ ] Check open graph / social preview metadata
 - [ ] Launch checklist approval
+
+## Standing constraints
+
+These come from the upstream project and are not stylistic choices:
+
+- No accuracy figure may be published that `eval/` cannot reproduce. The homepage previously
+  showed an invented "99.2%"; it must not come back.
+- Confidence is a ranking signal, not a probability, until the weights are calibrated.
+- The project is pre-v1 with no tagged release, so `go get` does not resolve yet.
 
 ## Execution order
 

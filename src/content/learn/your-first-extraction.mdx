@@ -5,7 +5,9 @@ description: Define a schema and call Extract to produce a typed result.
 
 # Your first extraction
 
-The central idea of Ovrin is simple: define a Go struct that describes the data you want, then ask Ovrin to extract it from a document.
+The central idea of Ovrin is simple: define a Go struct that describes the data you want, then ask
+Ovrin to extract it from a document. The struct tags are not decoration — the descriptions in them are
+what the model reads, and the rules after each description are what gets validated.
 
 ```go
 package main
@@ -13,8 +15,10 @@ package main
 import (
     "context"
     "fmt"
+    "os"
 
-    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+    "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+    ovrinskyl "github.com/BAGOMBEKA-JOB-DEV/ovrin/model/skyl"
 )
 
 type Receipt struct {
@@ -24,36 +28,66 @@ type Receipt struct {
 }
 
 func main() {
-    client := ovrin.New()
+    key := os.Getenv("OPENAI_API_KEY")
+    if key == "" {
+        fmt.Fprintln(os.Stderr, "set OPENAI_API_KEY to run this")
+        os.Exit(1)
+    }
+
+    client := ovrin.New(ovrin.WithModel(ovrinskyl.OpenAI(key, "gpt-5.2")))
+
     res, err := ovrin.Extract[Receipt](context.Background(), client, ovrin.File("receipt.pdf"))
     if err != nil {
-        panic(err)
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
     }
 
     if !res.Valid || res.NeedsReview {
-        fmt.Println("manual review required")
+        for _, reason := range res.Reasons {
+            fmt.Printf("review %s: %s\n", reason.Field, reason.Why)
+        }
         return
     }
 
-    fmt.Println(res.Data.Merchant)
-    fmt.Println(res.Data.Total)
+    fmt.Println(res.Data.Merchant, res.Data.Total)
 }
 ```
 
-## Result semantics
+## A model is required
 
-The result includes both a structured payload and metadata about how trustworthy it is.
+`WithModel` is the only option you must pass. Building a client without one is configuration rather
+than a mistake, so it does not panic — it surfaces later as `ErrNoProvider` from `Extract`. Passing a
+`nil` model to `WithModel` *is* a mistake, and panics at construction.
 
-Important rules:
+You do not need an OCR provider or a renderer to start. A PDF that carries its own text layer is read
+directly, which is both exact and nearly free.
 
-- `err != nil` means the extraction could not produce usable output
-- `res.Valid` tells you whether the data passed validation
-- `res.NeedsReview` tells you whether a human should inspect the result
-- missing values should stay absent instead of turning into zero values
+## Two answers, not one
 
-## Why this matters
+`err` and `res.Valid` answer different questions, and conflating them is the most common mistake:
 
-This is the core value proposition of Ovrin: you do not get a raw model answer and hope it is correct. You get a typed result with review markers, schema checks, and provenance.
+- **`err != nil`** means nothing usable came back — the source could not be read, no provider was
+  configured for it, a limit was exceeded, or the context ended. `res` is `nil`.
+- **`res.Valid == false`** means the data came back and some validation rule did not pass. The data is
+  still there. Eleven good fields are not discarded because of one bad one.
+
+## Absent is not zero
+
+A field that could not be read is left at its zero value in `Data` and marked absent in `Fields`.
+Nothing is ever guessed to satisfy the struct.
+
+```go
+total := res.Fields["total"]
+if !total.Found {
+    // "we could not read the total" — which is not the same fact
+    // as "the total is zero".
+}
+```
+
+`Fields` is keyed by the Go field path in snake case, not by the description in the tag: a field
+declared `UnitPrice float64` is `Fields["unit_price"]`. Nested structs use a dot (`vendor.name`) and
+slice elements are indexed (`items[0]`). The tag describes the field to the model and is free to be
+reworded; your Go name is your own identifier and does not move under you when a description improves.
 
 ## Next
 
