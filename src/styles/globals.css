@@ -358,6 +358,11 @@ html.js-reveal .reveal[data-shown='true'] {
   font-size: inherit;
 }
 
+/* A plate on a tinted band would otherwise be the same colour as the band. */
+.band-tinted :where(.code-plate) pre {
+  background: var(--color-surface) !important;
+}
+
 /* Shiki emits the light theme inline and the dark one as custom properties, so
    only the dark direction needs overriding. */
 html.dark :where(.article-content, .code-plate) .shiki,

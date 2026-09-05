@@ -13,12 +13,14 @@ export function Moment({
   children?: React.ReactNode;
 }) {
   // Alternating canvas tints separate sections, the way apple.com does it —
-  // rather than borders and drop shadows.
-  const tinted = index % 2 === 1;
+  // rather than borders and drop shadows. The hero above is untinted, so the
+  // first moment is tinted and the run alternates from there into the tinted
+  // spec strip below.
+  const tinted = index % 2 === 0;
   const codeFirst = index % 2 === 1;
 
   return (
-    <section className={tinted ? 'bg-canvas-alt' : 'bg-canvas'}>
+    <section className={tinted ? 'band-tinted bg-canvas-alt' : 'bg-canvas'}>
       <div className="mx-auto max-w-(--container-story) px-[22px] py-20 sm:py-28">
         <div className="grid items-center gap-x-14 gap-y-10 lg:grid-cols-2">
           <div className={codeFirst ? 'lg:order-2' : undefined}>

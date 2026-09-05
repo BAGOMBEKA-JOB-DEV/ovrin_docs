@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { Reveal } from '@/components/reveal';
 
 describe('Reveal', () => {
-  it('starts hidden so the server and client markup agree', () => {
-    // No IntersectionObserver in jsdom by default, which is also the
-    // no-support path: it must fall back to visible rather than stay hidden.
+  it('falls back to visible where IntersectionObserver is unavailable', () => {
+    // jsdom provides none, which is also the real no-support path: content
+    // must end up visible rather than stranded hidden.
     render(
       <Reveal>
         <p>content</p>
