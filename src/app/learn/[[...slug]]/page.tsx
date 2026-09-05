@@ -45,7 +45,11 @@ export default async function LearnPage({ params }: { params: Promise<{ slug?: s
   const html = await renderMarkdownWithHighlight(doc.body);
 
   return (
-    <DocsShell title={doc.frontmatter.title} description={doc.frontmatter.description} currentPath={route}>
+    <DocsShell
+      title={doc.frontmatter.title} description={doc.frontmatter.description}
+      currentPath={route}
+      headings={doc.headings}
+    >
       <article className="article-content" dangerouslySetInnerHTML={{ __html: html }} />
     </DocsShell>
   );

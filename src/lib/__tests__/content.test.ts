@@ -4,6 +4,7 @@ import {
   listAllContentRoutes,
   renderMarkdownWithHighlight,
   resolveContentFile,
+  stripLeadingTitle,
 } from '@/lib/content';
 
 describe('resolveContentFile', () => {
@@ -68,5 +69,52 @@ describe('renderMarkdownWithHighlight', () => {
     const html = await renderMarkdownWithHighlight('```wat\nnot a real language\n```\n');
     expect(html).toContain('not a real language');
     expect(html).not.toContain('```');
+  });
+});
+
+describe('stripLeadingTitle', () => {
+  // DocsShell renders the title from frontmatter, so a leading `# Title` in the
+  // body would put a second <h1> on every page.
+  it('drops a leading h1 that repeats the frontmatter title', () => {
+    expect(stripLeadingTitle('# Result[T]\n\nBody.', 'Result[T]')).toBe('Body.');
+  });
+
+  it('ignores inline markup when comparing', () => {
+    expect(stripLeadingTitle('# `Extract[T]`\n\nBody.', 'Extract[T]')).toBe('Body.');
+  });
+
+  it('keeps an h1 that says something different', () => {
+    const body = '# Something else\n\nBody.';
+    expect(stripLeadingTitle(body, 'Result[T]')).toBe(body);
+  });
+
+  it('leaves a body that starts with prose alone', () => {
+    expect(stripLeadingTitle('Body.', 'Result[T]')).toBe('Body.');
+  });
+
+  it('leaves every real page with no leading h1', () => {
+    for (const route of listAllContentRoutes()) {
+      expect(getDoc(route).body.startsWith('# '), route).toBe(false);
+    }
+  });
+});
+
+describe('heading anchors', () => {
+  it('gives h2 and h3 ids matching the extracted headings', async () => {
+    const doc = getDoc('/learn/pipeline');
+    const html = await renderMarkdownWithHighlight(doc.body);
+
+    for (const heading of doc.headings) {
+      expect(html, heading.text).toContain(`id="${heading.id}"`);
+    }
+    expect(doc.headings.length).toBeGreaterThan(0);
+  });
+});
+
+describe('code themes', () => {
+  it('emits both themes so code follows the page appearance', async () => {
+    const html = await renderMarkdownWithHighlight('```go\nvar x = 1\n```\n');
+    expect(html).toContain('shiki-themes');
+    expect(html).toContain('--shiki-dark:');
   });
 });

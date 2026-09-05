@@ -7,20 +7,21 @@ description: Learn the staged extraction flow that gives Ovrin its trust and exp
 
 Ovrin does not treat document extraction as a single prompt. It uses a pipeline.
 
-## Pipeline stages
+## The nine stages
 
-The upstream architecture describes a document moving through stages such as:
+A document passes through nine named stages, in this order:
 
-- format detection
-- text-layer extraction
-- OCR fallback when needed
-- rendering and rasterization
-- normalization
-- schema-driven extraction
-- validation
-- cross-field checks
-- grounding and provenance
-- confidence scoring
+1. **Detect** — the format, determined by content rather than by file extension.
+2. **Acquire** — page content, as text, images, or both.
+3. **Normalise** — one text stream, with offsets preserved back to the source.
+4. **Schema** — your Go type read by reflection into a JSON Schema.
+5. **Prompt** — the request built in the core, with document content kept as data.
+6. **Generate** — the model call, returning raw JSON.
+7. **Validate** — field rules and cross-field rules.
+8. **Ground** — each value searched for in the document.
+9. **Score** — the signals combined into confidence and a review decision.
+
+Each stage names itself in errors and events, so a failure says which one failed.
 
 ## Why the pipeline matters
 
