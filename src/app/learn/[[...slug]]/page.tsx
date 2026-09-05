@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { docMetadata } from '@/lib/metadata';
+import { JsonLd } from '@/components/json-ld';
+import { breadcrumbSchema, techArticleSchema } from '@/lib/structured-data';
 import { DocsShell } from '@/components/docs-shell';
 import { getDoc, renderMarkdownWithHighlight, resolveContentFile } from '@/lib/content';
 import { flattenSidebar, sidebarLearn } from '@/sidebars';
@@ -29,13 +32,7 @@ export async function generateMetadata({
   const route = routeFor(slug);
   const { title, description } = getDoc(route).frontmatter;
 
-  return {
-    title,
-    description,
-    alternates: { canonical: route },
-    openGraph: { type: 'article', url: route, title, description },
-    twitter: { title, description },
-  };
+  return docMetadata({ title, description, route });
 }
 
 export default async function LearnPage({ params }: { params: Promise<{ slug?: string[] }> }) {
@@ -44,13 +41,24 @@ export default async function LearnPage({ params }: { params: Promise<{ slug?: s
   const doc = getDoc(route);
   const html = await renderMarkdownWithHighlight(doc.body);
 
+  const { title, description } = doc.frontmatter;
+
   return (
-    <DocsShell
-      title={doc.frontmatter.title} description={doc.frontmatter.description}
-      currentPath={route}
-      headings={doc.headings}
-    >
-      <article className="article-content" dangerouslySetInnerHTML={{ __html: html }} />
-    </DocsShell>
+    <>
+      <JsonLd
+        data={[
+          techArticleSchema({ title, description, route }),
+          breadcrumbSchema({ title, route }),
+        ]}
+      />
+      <DocsShell
+        title={title}
+        description={description}
+        currentPath={route}
+        headings={doc.headings}
+      >
+        <article className="article-content" dangerouslySetInnerHTML={{ __html: html }} />
+      </DocsShell>
+    </>
   );
 }

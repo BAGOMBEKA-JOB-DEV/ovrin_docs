@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { SiteHeader } from '@/components/site-header';
 import { Hero } from '@/components/home/hero';
 import { Moment } from '@/components/home/moment';
@@ -6,6 +7,15 @@ import { StageRail } from '@/components/home/stage-rail';
 import { Reveal } from '@/components/reveal';
 import { HOME_MOMENTS } from '@/content/home/moments';
 import { highlightCode } from '@/lib/content';
+import { JsonLd } from '@/components/json-ld';
+import { softwareSchema, websiteSchema } from '@/lib/structured-data';
+
+// The layout supplies title and description; what it cannot supply is a
+// canonical, which is per-page by definition.
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { url: '/' },
+};
 
 export default async function HomePage() {
   // Highlighting happens here, at build time, with the same Shiki call the
@@ -20,6 +30,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
+      <JsonLd data={[websiteSchema(), softwareSchema()]} />
       <SiteHeader />
 
       <main>

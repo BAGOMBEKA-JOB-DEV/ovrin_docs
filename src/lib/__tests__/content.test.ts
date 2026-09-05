@@ -73,28 +73,60 @@ describe('renderMarkdownWithHighlight', () => {
 });
 
 describe('stripLeadingTitle', () => {
-  // DocsShell renders the title from frontmatter, so a leading `# Title` in the
-  // body would put a second <h1> on every page.
-  it('drops a leading h1 that repeats the frontmatter title', () => {
-    expect(stripLeadingTitle('# Result[T]\n\nBody.', 'Result[T]')).toBe('Body.');
+  // DocsShell renders the title from frontmatter, so any leading h1 in the body
+  // is a second one on the page.
+  it('drops a leading h1', () => {
+    expect(stripLeadingTitle('# Result[T]\n\nBody.')).toBe('Body.');
   });
 
-  it('ignores inline markup when comparing', () => {
-    expect(stripLeadingTitle('# `Extract[T]`\n\nBody.', 'Extract[T]')).toBe('Body.');
-  });
-
-  it('keeps an h1 that says something different', () => {
-    const body = '# Something else\n\nBody.';
-    expect(stripLeadingTitle(body, 'Result[T]')).toBe(body);
+  it('drops a leading h1 even when it differs from the frontmatter title', () => {
+    // /learn opened with `# Ovrin` under `title: Overview` and shipped both.
+    expect(stripLeadingTitle('# Ovrin\n\nBody.')).toBe('Body.');
   });
 
   it('leaves a body that starts with prose alone', () => {
-    expect(stripLeadingTitle('Body.', 'Result[T]')).toBe('Body.');
+    expect(stripLeadingTitle('Body.')).toBe('Body.');
+  });
+
+  it('leaves an h2 alone', () => {
+    expect(stripLeadingTitle('## Section\n\nBody.')).toBe('## Section\n\nBody.');
   });
 
   it('leaves every real page with no leading h1', () => {
     for (const route of listAllContentRoutes()) {
       expect(getDoc(route).body.startsWith('# '), route).toBe(false);
+    }
+  });
+});
+
+describe('internal links', () => {
+  // trailingSlash is on, so a link without one costs a 308 redirect.
+  it('adds the trailing slash Markdown authors omit', async () => {
+    const html = await renderMarkdownWithHighlight('[Schemas](/learn/schemas)');
+    expect(html).toContain('href="/learn/schemas/"');
+  });
+
+  it('leaves external links, anchors and files untouched', async () => {
+    const html = await renderMarkdownWithHighlight(
+      '[gh](https://example.com/x) [a](#section) [f](/spec.pdf) [ok](/learn/)',
+    );
+    expect(html).toContain('href="https://example.com/x"');
+    expect(html).toContain('href="#section"');
+    expect(html).toContain('href="/spec.pdf"');
+    expect(html).toContain('href="/learn/"');
+  });
+
+  it('keeps the slash before a hash or query', async () => {
+    const html = await renderMarkdownWithHighlight('[x](/learn/schemas#tags)');
+    expect(html).toContain('href="/learn/schemas/#tags"');
+  });
+
+  it('every in-content link across the site resolves without a redirect', async () => {
+    for (const route of listAllContentRoutes()) {
+      const html = await renderMarkdownWithHighlight(getDoc(route).body);
+      for (const [, href] of html.matchAll(/href="(\/[^"#?]*)"/g)) {
+        expect(href.endsWith('/'), `${route} -> ${href}`).toBe(true);
+      }
     }
   });
 });

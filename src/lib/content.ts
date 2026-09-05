@@ -73,7 +73,7 @@ export function getDoc(route: string): Doc {
     throw new Error(`${filePath} has no title in frontmatter.`);
   }
 
-  const body = stripLeadingTitle(content, frontmatter.title);
+  const body = stripLeadingTitle(content);
 
   return {
     route,
@@ -103,17 +103,15 @@ export async function highlightCode(code: string, lang = 'text'): Promise<string
 }
 
 /**
- * Removes a leading `# Title` when it just repeats the frontmatter title.
+ * Removes a leading `# Heading` from a document body.
  *
- * Every content file opens with one, and DocsShell already renders the title
- * from frontmatter, so keeping both puts two <h1> elements on every page.
+ * DocsShell renders the page title from frontmatter, so any h1 at the top of
+ * the body is a second one. Matching the title is not required — /learn opened
+ * with `# Ovrin` under `title: Overview` and shipped both.
  */
-export function stripLeadingTitle(body: string, title: string): string {
-  const match = /^\s*#\s+(.+?)\s*(?:\n|$)/.exec(body);
-  if (!match?.[1] || headingText(match[1]) !== headingText(title)) {
-    return body;
-  }
-  return body.slice(match[0].length).replace(/^\n+/, '');
+export function stripLeadingTitle(body: string): string {
+  const match = /^\s*#\s+.+?\s*(?:\n|$)/.exec(body);
+  return match ? body.slice(match[0].length).replace(/^\n+/, '') : body;
 }
 
 /**
@@ -121,9 +119,29 @@ export function stripLeadingTitle(body: string, title: string): string {
  * "on this page" rail has no anchors. Ids are assigned only at the depths
  * extractHeadings collects, so the two agree slug for slug.
  */
-function headingIdRenderer(): Renderer {
+/**
+ * Appends the trailing slash `trailingSlash: true` expects.
+ *
+ * Links authored in Markdown omit it, so every one was a 308 hop while the
+ * sidebar's links resolved directly — the same page under two URLs in one
+ * document. Normalising here keeps content authors from having to remember.
+ */
+function withTrailingSlash(href: string): string {
+  if (!href.startsWith('/') || href.startsWith('//')) return href;
+  const [path = '', rest = ''] = href.split(/(?=[?#])/, 2);
+  if (path.endsWith('/') || /\.[a-z0-9]+$/i.test(path)) return href;
+  return `${path}/${rest}`;
+}
+
+function docRenderer(): Renderer {
   const slugger = new GithubSlugger();
   const renderer = new Renderer();
+
+  renderer.link = function link({ href, title, tokens }) {
+    const text = this.parser.parseInline(tokens);
+    const attrs = title ? ` title="${title}"` : '';
+    return `<a href="${withTrailingSlash(href)}"${attrs}>${text}</a>`;
+  };
 
   renderer.heading = function heading({ tokens, depth }) {
     const inner = this.parser.parseInline(tokens);
@@ -157,7 +175,7 @@ export async function renderMarkdownWithHighlight(markdown: string): Promise<str
 
   out += markdown.slice(cursor);
 
-  return String(marked.parse(out, { breaks: true, gfm: true, renderer: headingIdRenderer() }));
+  return String(marked.parse(out, { breaks: true, gfm: true, renderer: docRenderer() }));
 }
 
 export function listAllContentRoutes(): string[] {
