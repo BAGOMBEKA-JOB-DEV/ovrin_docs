@@ -1,6 +1,6 @@
 ---
 title: Confidence and explainability
-description: Learn how Ovrin scores results and exposes evidence behind the values it returns.
+description: "How Ovrin scores an extraction: six named signals combined into a confidence value you can take apart, and why it ranks results rather than predicting them."
 ---
 
 # Confidence and explainability
@@ -9,13 +9,17 @@ One of Ovrin’s strongest product claims is that confidence is not just a singl
 
 ## Why this design matters
 
-An extracted total is not just “0.98 confidence.” The system can explain which signals contributed to that confidence, such as:
+An extracted total is not just "0.98 confidence". The score is composed from six named signals,
+each recorded on the field:
 
-- grounding in the source document
-- OCR agreement
-- schema fit
-- format parsing quality
-- cross-field consistency
+- `grounding` — whether the value actually appears in the source
+- `agreement` — whether two independent readings produced the same value
+- `ocr` — character-recognition confidence over the words behind the value
+- `schema` — whether the value satisfied its declared type and rules
+- `format` — whether it matches the expected shape for its kind
+- `cross_field` — consistency with sibling fields
+
+A signal that does not apply is absent rather than zero, and the remaining weights are redistributed.
 
 ## Explainability
 

@@ -4,6 +4,7 @@ import {
   listAllContentRoutes,
   renderMarkdownWithHighlight,
   resolveContentFile,
+  stripLeadingTitle,
 } from '@/lib/content';
 
 describe('resolveContentFile', () => {
@@ -68,5 +69,84 @@ describe('renderMarkdownWithHighlight', () => {
     const html = await renderMarkdownWithHighlight('```wat\nnot a real language\n```\n');
     expect(html).toContain('not a real language');
     expect(html).not.toContain('```');
+  });
+});
+
+describe('stripLeadingTitle', () => {
+  // DocsShell renders the title from frontmatter, so any leading h1 in the body
+  // is a second one on the page.
+  it('drops a leading h1', () => {
+    expect(stripLeadingTitle('# Result[T]\n\nBody.')).toBe('Body.');
+  });
+
+  it('drops a leading h1 even when it differs from the frontmatter title', () => {
+    // /learn opened with `# Ovrin` under `title: Overview` and shipped both.
+    expect(stripLeadingTitle('# Ovrin\n\nBody.')).toBe('Body.');
+  });
+
+  it('leaves a body that starts with prose alone', () => {
+    expect(stripLeadingTitle('Body.')).toBe('Body.');
+  });
+
+  it('leaves an h2 alone', () => {
+    expect(stripLeadingTitle('## Section\n\nBody.')).toBe('## Section\n\nBody.');
+  });
+
+  it('leaves every real page with no leading h1', () => {
+    for (const route of listAllContentRoutes()) {
+      expect(getDoc(route).body.startsWith('# '), route).toBe(false);
+    }
+  });
+});
+
+describe('internal links', () => {
+  // trailingSlash is on, so a link without one costs a 308 redirect.
+  it('adds the trailing slash Markdown authors omit', async () => {
+    const html = await renderMarkdownWithHighlight('[Schemas](/learn/schemas)');
+    expect(html).toContain('href="/learn/schemas/"');
+  });
+
+  it('leaves external links, anchors and files untouched', async () => {
+    const html = await renderMarkdownWithHighlight(
+      '[gh](https://example.com/x) [a](#section) [f](/spec.pdf) [ok](/learn/)',
+    );
+    expect(html).toContain('href="https://example.com/x"');
+    expect(html).toContain('href="#section"');
+    expect(html).toContain('href="/spec.pdf"');
+    expect(html).toContain('href="/learn/"');
+  });
+
+  it('keeps the slash before a hash or query', async () => {
+    const html = await renderMarkdownWithHighlight('[x](/learn/schemas#tags)');
+    expect(html).toContain('href="/learn/schemas/#tags"');
+  });
+
+  it('every in-content link across the site resolves without a redirect', async () => {
+    for (const route of listAllContentRoutes()) {
+      const html = await renderMarkdownWithHighlight(getDoc(route).body);
+      for (const [, href] of html.matchAll(/href="(\/[^"#?]*)"/g)) {
+        expect(href.endsWith('/'), `${route} -> ${href}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe('heading anchors', () => {
+  it('gives h2 and h3 ids matching the extracted headings', async () => {
+    const doc = getDoc('/learn/pipeline');
+    const html = await renderMarkdownWithHighlight(doc.body);
+
+    for (const heading of doc.headings) {
+      expect(html, heading.text).toContain(`id="${heading.id}"`);
+    }
+    expect(doc.headings.length).toBeGreaterThan(0);
+  });
+});
+
+describe('code themes', () => {
+  it('emits both themes so code follows the page appearance', async () => {
+    const html = await renderMarkdownWithHighlight('```go\nvar x = 1\n```\n');
+    expect(html).toContain('shiki-themes');
+    expect(html).toContain('--shiki-dark:');
   });
 });
