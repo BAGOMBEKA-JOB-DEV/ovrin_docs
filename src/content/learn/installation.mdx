@@ -74,10 +74,14 @@ model := ovrinskyl.New(
 )
 ```
 
+This path needs **Go 1.24 or newer**. Ovrin's own modules only need 1.22, but
+`github.com/BAGOMBEKA-JOB-DEV/skyl/provider/anthropic` declares `go 1.24`, and adding it raises your
+module's floor to match.
+
 ## Go version
 
-Every module declares `go 1.22`. That is a *language* floor, not a statement that Go 1.22.0 is safe to
-run Ovrin on.
+Every Ovrin module declares `go 1.22`. That is a *language* floor, not a statement that Go 1.22.0 is safe
+to run Ovrin on — and a provider you add can raise it, as the Anthropic one does.
 
 Ovrin hands attacker-controlled bytes to `archive/zip`, `encoding/xml`, `compress/flate` and `image/*`,
 so a defect in those packages is a defect in Ovrin's parsing path — and only a newer toolchain fixes it.
