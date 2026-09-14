@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   getDoc,
+  highlightCode,
   listAllContentRoutes,
   renderMarkdownWithHighlight,
   resolveContentFile,
@@ -170,6 +171,42 @@ describe('release status', () => {
         expect(pattern.test(text), `${file} matches ${pattern}`).toBe(false);
       }
     }
+  });
+});
+
+describe('copy button', () => {
+  // Every snippet on the site is highlighted through highlightCode, so this is
+  // the one place the button can be guaranteed on all of them.
+  function checkEverySnippet(html: string, where: string): number {
+    const pres = html.match(/<pre[\s\S]*?<\/pre>/g) ?? [];
+    for (const pre of pres) {
+      const buttons = pre.match(/<button\b[^>]*>/g) ?? [];
+      expect(buttons, where).toHaveLength(1);
+      expect(buttons[0], where).toContain('class="code-copy"');
+      expect(buttons[0], where).toContain('type="button"');
+      expect(buttons[0], where).toContain('aria-label="Copy code"');
+
+      // The button sits outside <code>, so it is never part of what is copied.
+      const code = pre.match(/<code[\s\S]*<\/code>/)?.[0] ?? '';
+      expect(code, where).not.toContain('code-copy');
+      expect(code, where).toMatch(/^<code[^>]*tabindex="0"/);
+
+      // Only the scrolling <code> takes focus, not the <pre> around it.
+      expect(pre.match(/^<pre[^>]*>/)?.[0], where).not.toContain('tabindex');
+    }
+    return pres.length;
+  }
+
+  it('is written into a snippet highlighted directly', async () => {
+    expect(checkEverySnippet(await highlightCode('x := 1', 'go'), 'highlightCode')).toBe(1);
+  });
+
+  it('is written into every snippet on every page', async () => {
+    let snippets = 0;
+    for (const route of listAllContentRoutes()) {
+      snippets += checkEverySnippet(await renderMarkdownWithHighlight(getDoc(route).body), route);
+    }
+    expect(snippets).toBeGreaterThan(0);
   });
 });
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { siteConfig } from '@/config/site';
 import { SiteFooter } from '@/components/site-footer';
 import { NavigationProgress } from '@/components/navigation-progress';
+import { CodeCopy } from '@/components/code-copy';
 import { themeInitScript } from '@/lib/theme';
 import { revealInitScript } from '@/lib/reveal';
 import '@/styles/globals.css';
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <NavigationProgress />
+        <CodeCopy />
         <div className="min-h-screen">{children}</div>
         <SiteFooter />
       </body>
