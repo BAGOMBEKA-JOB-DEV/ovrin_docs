@@ -1,15 +1,9 @@
 export function CodePlate({ html, label }: { html: string; label: string }) {
   return (
-    <figure className="code-plate">
-      {/* Scrollable regions must be reachable by keyboard, and the label says
-          what is being scrolled. */}
-      <div
-        tabIndex={0}
-        role="group"
-        aria-label={`${label} — code sample`}
-        className="rounded-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+    // The <code> inside scrolls and takes keyboard focus itself, and the copy
+    // button sits in its corner, so this wrapper needs no tab stop of its own.
+    <figure className="code-plate" aria-label={`${label} — code sample`}>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
     </figure>
   );
 }

@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import GithubSlugger from 'github-slugger';
 import { codeToHtml } from 'shiki';
 import { marked, Renderer } from 'marked';
+import { copyButtonTransformer } from '@/lib/code-copy';
 
 const CONTENT_ROOT = path.join(process.cwd(), 'src', 'content');
 
@@ -93,7 +94,14 @@ export const CODE_THEMES = { light: 'github-light', dark: 'github-dark' } as con
  * appearance instead of a single compiled-in theme looking identical in both.
  */
 export async function highlightCode(code: string, lang = 'text'): Promise<string> {
-  const options = { themes: CODE_THEMES, defaultColor: 'light' } as const;
+  const options = {
+    themes: CODE_THEMES,
+    defaultColor: 'light' as const,
+    // Every snippet gets its copy button here. The scrolling <code> takes the
+    // keyboard focus, so the <pre> must not be a second tab stop.
+    tabindex: false as const,
+    transformers: [copyButtonTransformer],
+  };
   try {
     return await codeToHtml(code, { lang, ...options });
   } catch {

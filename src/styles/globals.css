@@ -394,11 +394,12 @@ html.js-reveal .reveal[data-shown='true'] {
    compiled-in theme looking identical in both appearances.
    --------------------------------------------------------------------------- */
 
+/* The pre is a fixed frame and the code scrolls inside it, so the copy button
+   stays in the corner while a long line is scrolled sideways. */
 :where(.article-content, .code-plate) pre {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
+  position: relative;
+  overflow: hidden;
   border-radius: var(--radius-card);
-  padding: 1.15rem 1.25rem;
   font-size: 0.8125rem;
   line-height: 1.7;
   letter-spacing: 0;
@@ -414,14 +415,93 @@ html.js-reveal .reveal[data-shown='true'] {
 }
 
 :where(.article-content, .code-plate) pre code {
+  display: block;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 1.15rem 1.25rem;
   background: transparent;
-  padding: 0;
   font-size: inherit;
+}
+
+:where(.article-content, .code-plate) pre code:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  border-radius: inherit;
 }
 
 /* A plate on a tinted band would otherwise be the same colour as the band. */
 .band-tinted :where(.code-plate) pre {
   background: var(--color-surface) !important;
+}
+
+/* The copy button in the corner of every snippet. Its background inherits the
+   plate's, so it matches on plain and tinted bands in both appearances. */
+.code-copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-control);
+  background: inherit;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  /* Hidden, and so out of the tab order, until the copy handler is listening. */
+  visibility: hidden;
+  transition:
+    opacity 200ms var(--ease-apple),
+    color 200ms var(--ease-apple);
+}
+
+html[data-code-copy='ready'] .code-copy {
+  visibility: visible;
+}
+
+.code-copy:hover {
+  color: var(--color-ink);
+}
+
+.code-copy:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.code-copy[data-copied='true'] {
+  color: var(--color-accent);
+}
+
+.code-copy__done,
+.code-copy[data-copied='true'] .code-copy__idle {
+  display: none;
+}
+
+.code-copy[data-copied='true'] .code-copy__done {
+  display: block;
+}
+
+/* With a pointer, reveal on hover or focus. Touch screens have no hover, so
+   there the button is always shown. */
+@media (hover: hover) {
+  .code-copy {
+    opacity: 0;
+  }
+
+  pre:hover > .code-copy,
+  pre:focus-within > .code-copy,
+  .code-copy[data-copied='true'] {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-copy {
+    transition: none;
+  }
 }
 
 /* Shiki emits the light theme inline and the dark one as custom properties, so
