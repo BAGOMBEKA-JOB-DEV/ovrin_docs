@@ -14,19 +14,21 @@ cover how it is built, what the standards are, and where the project honestly st
 | --- | --- |
 | [Contributing](/community/contributing) | How to propose a change, and what review will ask you. |
 | [Rules](/community/rules) | The numbered engineering rules the codebase is held to. |
-| [Roadmap](/community/roadmap) | What is built, what is next, and what is deliberately not being built. |
-| [Release status](/community/release-status) | Current maturity, and what is still pre-v1. |
+| [Roadmap](/community/roadmap) | What has shipped, what is still open, and what is deliberately not being built. |
+| [Release status](/community/release-status) | What v1.0.0 promises, what it does not, and how releases work. |
 
 ## What state the project is in
 
 Worth knowing before you evaluate it:
 
-- **The library is implemented, and no release is tagged.** Everything through the v0.3 feature set
-  exists; the version numbers do not exist yet.
-- **The API is not stable** and will change before v1.0.
-- **No accuracy figure has been published**, and none will be until the evaluation harness can
-  reproduce it. The evaluation corpus today is entirely synthetic.
+- **Ovrin is at v1.0.0, and the API is stable.** All nine modules are tagged, and a breaking change
+  now requires a v2.
+- **That promise is about compatibility, not accuracy.** No accuracy figure has been published, and none
+  will be until the evaluation harness can reproduce it. The evaluation corpus today is entirely
+  synthetic.
 - **Confidence is a ranking signal, not a probability.** The weights are provisional until calibration.
+- **Nobody outside the project has reported running it in production.** That makes early reports
+  unusually valuable.
 - **The bus factor is one.** The project says so out loud rather than leaving you to discover it.
 
 ## Disagreement is welcome

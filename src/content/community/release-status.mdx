@@ -1,24 +1,71 @@
 ---
 title: Release status
-description: "Where Ovrin stands today: implemented through v0.3, no release tagged, confidence weights provisional, and no accuracy figure published yet."
+description: "Ovrin is at v1.0.0: the API is stable and will not break without a v2. What that promises, what it deliberately does not, and how releases work."
 ---
 
 # Release status
 
-Ovrin is implemented and designed, but the upstream project is still pre-v1. That means the project is not yet considered stable enough for a general production guarantee.
+**Ovrin is at v1.0.0, and the API is stable.** A breaking change now requires a v2. That is a promise
+about compatibility and only about compatibility — a version number is a poor place to hide a caveat,
+so the caveats are stated here instead.
 
-## What this means
+## What v1.0.0 promises
 
-- the library is feature-complete through the documented scope
-- adapters and architecture are present
-- no release tag is yet established in the public upstream repo
-- accuracy and calibration are still being formed by evaluation and real corpus work
+| Claim | Status |
+| --- | --- |
+| The API will not break without a v2 | **Yes.** The public surface is recorded in `api/ovrin.txt` and checked on every commit. |
+| A published accuracy figure | **None.** The evaluation corpus is 25 synthetic documents, and the only committed report is a `no-run` placeholder of zeros. |
+| Confidence is a calibrated probability | **No.** It is a ranking signal. It orders a review queue well; it does not mean "correct this often". |
+| Used in production outside the project | **Not that anyone has reported.** |
 
-## Why it matters
+If you are deciding whether to depend on Ovrin for something that matters, the second, third and fourth
+rows are the ones to weigh.
 
-For document extraction systems, accuracy and confidence calibration are not optional. A serious library must not overstate certainty until it has evidence from the real world.
+## Why the version and the evidence are separate
+
+[ADR-0024](https://github.com/BAGOMBEKA-JOB-DEV/ovrin/blob/main/docs/adr/0024-versioning-and-stability.md)
+originally held v1.0 back until four conditions held: a corpus of real documents with committed reports,
+calibrated confidence, a production deployment outside the project, and no API change the project still
+wanted to make.
+
+[ADR-0032](https://github.com/BAGOMBEKA-JOB-DEV/ovrin/blob/main/docs/adr/0032-v1-is-an-api-promise.md)
+superseded that gate. A semantic version is a statement about compatibility, and gating it on accuracy
+evidence made v1.0 unreachable for reasons that have nothing to do with what v1.0 means. Only the last
+condition — no wanted API change — was met, and it is the one v1.0.0 rests on.
+
+The other three were **not withdrawn**. They remain the conditions for calling Ovrin *accurate*, and
+they are tracked on the [roadmap](/community/roadmap). The stability judgement itself rests on the
+maintainer's own testing against real documents, and is recorded as exactly that rather than as corpus
+evidence.
+
+## What stability means in practice
+
+- **`api/ovrin.txt` is a compatibility contract.** Removing an exported symbol or changing a signature
+  is a release blocker, not a regeneration.
+- **Additions are not breaking.** Three are already wanted — cache fields on `Usage`, a handwriting kind
+  on `Word`, and rendering `Layout.Pairs` into the prompt — and each will arrive in a minor release.
+- **The interfaces you implement will not grow.** A new method on `Model`, `OCR`, `Renderer`,
+  `DocumentOCR` or `Scorer` would break every implementation, so it would need a v2.
+
+## Releases
+
+| Date | Release |
+| --- | --- |
+| 2026-09-05 | Core `v0.3.0` — the first release. The seven adapters and the example at `<path>/v0.1.0`. |
+| 2026-09-12 | All nine modules at `v1.0.0`. No library code changed; the release is the stability promise. |
+
+Modules version independently and are tagged with their path prefix, such as `model/skyl/v1.0.0`. They
+started v1 together and may diverge from here.
+
+## Support
+
+Only the latest release of each module receives fixes, and there are no backports to earlier v1 minors
+while the project has one maintainer. Because modules version independently, "latest" means the latest
+release of that module. Security issues are reported privately through GitHub Security Advisories,
+never as a public issue.
 
 ## Related
 
+- [Installation](/learn/installation)
 - [Roadmap](/community/roadmap)
-- [Evaluation](/learn/evaluation)
+- [Evaluation and accuracy](/learn/evaluation)

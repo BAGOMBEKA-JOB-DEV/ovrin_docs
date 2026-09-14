@@ -5,15 +5,35 @@ description: "How extraction quality is measured against a committed corpus, and
 
 # Evaluation and accuracy
 
-The upstream Ovrin project is explicit that no accuracy claim is published unless it is reproduced by the evaluation harness. It also states that real-world corpus work is still necessary before confidence and accuracy claims can be trusted.
+Ovrin publishes no accuracy figure that its own evaluation harness cannot reproduce — and today it
+publishes none at all.
 
-## Why evaluation matters
+## v1.0.0 promises the API, not accuracy
 
-To justify a document-extraction product, you need evidence that it works on the kinds of documents you care about. Synthetic corpora are useful, but they do not replace real data.
+Ovrin is at v1.0.0, and that version number is a promise about compatibility: the API will not break
+without a v2. It is deliberately silent about how accurate the library is, because that has not been
+measured. The two claims are kept apart on purpose.
 
-## Current stage
+## Where evaluation stands
 
-The project has evaluation infrastructure, but it remains careful about claiming a general accuracy number before real corpus data is in place.
+- **The corpus is synthetic.** `eval/corpus/` holds 25 documents, five in each of five categories —
+  invoices, receipts, forms, statements and identity documents — and every one was generated.
+- **No run has been committed.** The only report is `no-run`: zeros from the report renderer over an
+  empty set of results, not a measurement.
+- **Confidence is not calibrated.** It is a ranking signal until there is a real corpus to calibrate it
+  against.
+
+## Why synthetic documents are not enough
+
+A generated corpus measures the generator as much as the extractor. It lets the harness run, and lets
+the harness itself be tested, but a figure computed on it would say little about the documents you care
+about.
+
+## What would change this
+
+A corpus of real, redistributable documents in every category, committed reports across at least two
+provider generations, and a calibration run. Those are the open items on the
+[roadmap](/community/roadmap).
 
 ## Related
 

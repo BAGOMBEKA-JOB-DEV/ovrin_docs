@@ -37,8 +37,10 @@ package main
 import (
     "context"
     "fmt"
+    "os"
 
-    ovrin "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+    "github.com/BAGOMBEKA-JOB-DEV/ovrin"
+    ovrinskyl "github.com/BAGOMBEKA-JOB-DEV/ovrin/model/skyl"
 )
 
 type Invoice struct {
@@ -49,15 +51,18 @@ type Invoice struct {
 }
 
 func main() {
-    client := ovrin.New()
+    // A model is the one provider every client needs.
+    model := ovrinskyl.OpenAI(os.Getenv("OPENAI_API_KEY"), "gpt-5.2")
+    client := ovrin.New(ovrin.WithModel(model))
+
     res, err := ovrin.Extract[Invoice](context.Background(), client, ovrin.File("invoice.pdf"))
     if err != nil {
-        panic(err)
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
     }
 
-    fmt.Println(res.Valid)
+    fmt.Println(res.Valid, res.NeedsReview)
     fmt.Println(res.Data.Total)
-    fmt.Println(res.NeedsReview)
 }
 ```
 
