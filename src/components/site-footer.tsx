@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { siteConfig } from '@/config/site';
 
 export function SiteFooter() {
@@ -16,8 +17,14 @@ export function SiteFooter() {
           </a>
           .
         </p>
+        {/* The version is never shown without the link to what it does not
+            promise: v1.0.0 is an API guarantee, not an accuracy one. */}
         <p className="mt-2">
-          Ovrin is pre-v1 and no release is tagged yet.{' '}
+          Ovrin v1.0.0 — the API is stable.{' '}
+          <Link href="/community/release-status" className="text-accent hover:underline">
+            What that does and does not promise
+          </Link>
+          .{' '}
           <a href={siteConfig.repo} target="_blank" rel="noreferrer" className="text-accent hover:underline">
             Source on GitHub
           </a>

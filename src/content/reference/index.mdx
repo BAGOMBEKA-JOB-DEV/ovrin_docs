@@ -47,6 +47,10 @@ learns its name.
 
 ## A note on stability
 
-Ovrin is pre-v1 and no release is tagged. The API will change before v1.0. The upstream repository
-keeps a generated record of the public surface in `api/ovrin.txt`, so every change to it is a visible
-line in a diff that somebody had to intend.
+Ovrin is at **v1.0.0**, and this API is stable: nothing documented here will break without a v2. The
+upstream repository records the public surface in `api/ovrin.txt`, which is now a compatibility contract
+— removing an exported symbol or changing a signature is a release blocker, not a regeneration.
+Additions still arrive in minor releases.
+
+The promise covers the API only. It says nothing about accuracy, which is still unmeasured —
+[release status](/community/release-status) sets out both.

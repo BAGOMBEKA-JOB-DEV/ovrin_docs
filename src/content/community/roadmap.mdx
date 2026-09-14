@@ -1,29 +1,70 @@
 ---
 title: Roadmap
-description: "What is built, what is coming, and what Ovrin deliberately will not build. v1.0 is gated on evidence from real documents rather than on more code."
+description: "v1.0.0 has shipped and the API is stable. What remains is evidence rather than code: a real corpus, calibrated confidence, and outside production use."
 ---
 
 # Roadmap
 
-The upstream project explicitly states that it is pre-v1 and that the implementation is built but not yet proven on real-world documents at scale.
+**v1.0.0 has shipped.** Every roadmap milestone through v0.3 is implemented, and v1.0.0 turned the API
+into a promise: no breaking change without a v2. What is left is not mainly a list of features. It is
+evidence.
 
-## Current status
+## Shipped
 
-- the core library is implemented
-- the architecture is mature and documented
-- adapter modules exist for provider integration
-- evaluation infrastructure is present
-- real-world accuracy claims remain intentionally deferred
+- **v0.1 — prove the idea.** Format detection by content, in-tree PDF text extraction, resource limits,
+  schema reflection, the three provider seams, validation, grounding, confidence scoring, hooks, and the
+  `model/skyl` and `ocr/google` adapters.
+- **v0.2 — real documents.** `render/pdfium` and `ocr/tesseract` without cgo, `ocr/textract` and
+  `ocr/azure` on the standard library, provenance with bounding boxes, provider fallback chains, and the
+  `otel` module.
+- **v0.3 — harder documents.** DOCX, XLSX and CSV; two readings with cross-validation; layout
+  preservation; one retry on malformed model output; suspicious-content detection.
+- **v1.0 — the API promise.** All nine modules tagged `v1.0.0`. Batch extraction and circuit breaking
+  landed along the way.
 
-## Main next steps
+## Still open — the evidence
 
-- get real documents into the evaluation corpus
-- run the evaluation harness against production-like inputs
-- calibrate confidence weights
-- define the first stable release policy
-- prove the system under real document diversity
+These four conditions were the original gate for v1.0. They no longer gate the version number, but three
+of them are still the conditions for calling Ovrin *accurate*:
+
+- [ ] **A corpus of real documents in every category**, with committed reports across at least two
+      provider generations. The 25 documents committed today are synthetic.
+- [ ] **Calibrated confidence** — a published expected calibration error, and accuracy within confidence
+      bands. Until then, confidence is documented as a ranking signal, not a probability.
+- [ ] **At least one production deployment that is not the maintainer's**, with its feedback
+      incorporated.
+- [x] **No known API change the project would want to make.** This is the one condition v1.0.0 rests on.
+
+## Still wanted
+
+- **Three additive API changes** — cache-read and cache-write fields on `Usage`, a handwriting kind on
+  `Word`, and rendering `Layout.Pairs` into the prompt. Key-value pairs already cross the OCR seam; they
+  are not yet shown to the model. None of the three breaks a caller, so each is a minor release.
+- **Streaming for documents that do not fit in memory** — deferred. It re-architects the places where
+  resource limits are enforced, which is not work to do before there is a real corpus to show whether
+  behaviour moved.
+- **Per-stage benchmarks**, published.
+
+## Beyond v1
+
+Wanted, unscheduled, and each needing an architecture decision record before any code: a CLI, an optional
+HTTP service, runtime schemas for customer-defined forms, a `Validator` interface for user-defined rules,
+three or more readings with majority voting, encrypted PDF support, and a trained confidence calibrator.
+
+## Deferred, deliberately
+
+Things that look like obvious features and are not being built:
+
+- **A review interface.** Ovrin produces everything a review workflow needs, and builds none of it —
+  every organisation's workflow differs.
+- **A hosted API.** Ovrin is a library you run.
+- **A better OCR engine.** Ovrin orchestrates OCR; it does not compete with it.
+- **Automatic resolution of disagreements.** When two readings differ, both are recorded and the field
+  is flagged. Silently preferring one is the failure the feature exists to prevent.
+- **Silent sanitising of suspicious content.** It is detected and reported, never stripped.
+- **A model self-confidence field.** Well-formed numbers, uncorrelated with correctness.
 
 ## Related
 
 - [Release status](/community/release-status)
-- [Evaluation](/learn/evaluation)
+- [Evaluation and accuracy](/learn/evaluation)

@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: "Install the Ovrin core and only the provider modules you need. The core has zero dependencies and no cgo, so it cross-compiles and builds static."
+description: "Install the Ovrin core at v1.0.0 and only the provider modules you need. The core has zero dependencies and no cgo, so it cross-compiles and builds static."
 ---
 
 # Installation
@@ -9,51 +9,84 @@ Ovrin is a Go library. The core module has zero external dependencies and uses n
 cross-compiles and builds static. Provider-specific code lives in separate modules, so you pull in
 only the vendors you actually use.
 
-## Before you start: no release is tagged yet
-
-Ovrin is pre-v1 and **no version has been tagged**. The `go get` commands you would expect will not
-resolve yet, and the API will change before v1.0. Until a release exists, build from a checkout.
+## Install the core
 
 ```bash
-git clone https://github.com/BAGOMBEKA-JOB-DEV/ovrin.git
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin@v1.0.0
 ```
 
-Then point your module at that checkout with a `replace` directive:
+Ovrin is at **v1.0.0**, and the API is stable: nothing will break without a v2
+([ADR-0032](https://github.com/BAGOMBEKA-JOB-DEV/ovrin/blob/main/docs/adr/0032-v1-is-an-api-promise.md)).
+That is a promise about compatibility, not about accuracy — [release status](/community/release-status)
+says exactly what v1.0.0 does and does not claim.
+
+## Add the providers you use
+
+The core gives you `Client`, `Extract`, the three provider seams, and the whole pipeline. Every provider
+is its own module, so install only the ones you need and nothing else enters your `go.sum`.
+
+```bash
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/model/skyl@v1.0.0     # a model: OpenAI, Gemini, Ollama, …
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/tesseract@v1.0.0  # local, offline OCR
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/google@v1.0.0     # Google Cloud Vision
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/azure@v1.0.0      # Azure AI Document Intelligence
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/ocr/textract@v1.0.0   # Amazon Textract
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/render/pdfium@v1.0.0  # rasterise scanned PDFs
+go get github.com/BAGOMBEKA-JOB-DEV/ovrin/otel@v1.0.0           # OpenTelemetry
+```
+
+| Module | Version | What it gives you |
+| --- | --- | --- |
+| `ovrin` | `v1.0.0` | The core library. Zero dependencies, no cgo. |
+| `ovrin/model/skyl` | `v1.0.0` | The `Model` seam, with constructors for OpenAI, Gemini, Ollama and any OpenAI-compatible host. |
+| `ovrin/ocr/tesseract` | `v1.0.0` | Local, offline OCR. Tesseract compiled to WebAssembly, so still no cgo. |
+| `ovrin/ocr/google` | `v1.0.0` | OCR via Google Cloud Vision. Standard library only — no Google SDK. |
+| `ovrin/ocr/azure` | `v1.0.0` | OCR via Azure AI Document Intelligence. The adapter that reports table structure. |
+| `ovrin/ocr/textract` | `v1.0.0` | OCR via Amazon Textract. Standard library only, SigV4 included. |
+| `ovrin/render/pdfium` | `v1.0.0` | The `Renderer` seam. PDFium under WebAssembly, so rasterising needs no cgo either. |
+| `ovrin/otel` | `v1.0.0` | Turns Ovrin's hooks into OpenTelemetry spans and metrics. |
+
+The modules version independently, each tagged with its own path prefix — `model/skyl/v1.0.0`, for
+example. They all started at `v1.0.0` together, but they may diverge from here, so for any one module
+"latest" means the latest release *of that module*.
+
+## Using Anthropic
+
+`model/skyl` has constructors for OpenAI, Gemini, Ollama and OpenAI-compatible hosts, and deliberately
+none for Anthropic. Anthropic's SDK lives in its own skyl module, and a constructor here would put that
+SDK into the `go.mod` of every Ovrin user — including the ones running Ollama locally.
+
+Anthropic is fully supported. Wire it explicitly, and the SDK lands in your `go.mod`, where you can see
+it:
 
 ```go
-// go.mod
-require github.com/BAGOMBEKA-JOB-DEV/ovrin v0.0.0
+import (
+    "github.com/BAGOMBEKA-JOB-DEV/skyl"
+    "github.com/BAGOMBEKA-JOB-DEV/skyl/provider/anthropic"
+    ovrinskyl "github.com/BAGOMBEKA-JOB-DEV/ovrin/model/skyl"
+)
 
-replace github.com/BAGOMBEKA-JOB-DEV/ovrin => ../ovrin
+model := ovrinskyl.New(
+    skyl.New(anthropic.New(key)),
+    ovrinskyl.WithModelID("claude-opus-5"),
+    // Anthropic requires an explicit output cap.
+    ovrinskyl.WithMaxTokens(8192),
+)
 ```
-
-This is the same arrangement the provider modules use among themselves while the repository is
-untagged.
-
-## The modules
-
-The core gives you `Client`, `Extract`, the three provider seams, and the whole pipeline. Everything
-else is optional and lives in its own module with its own dependencies.
-
-| Module | What it gives you |
-| --- | --- |
-| `ovrin` | The core library. Zero dependencies, no cgo. |
-| `ovrin/model/skyl` | The `Model` seam over OpenAI, Gemini, Ollama, and OpenAI-compatible hosts. |
-| `ovrin/ocr/google` | OCR via Google Cloud Vision. Standard library only. |
-| `ovrin/ocr/tesseract` | Local, offline OCR. Tesseract compiled to WebAssembly, so still no cgo. |
-| `ovrin/ocr/azure` | OCR via Azure AI Document Intelligence. Reports table structure. |
-| `ovrin/ocr/textract` | OCR via Amazon Textract. Standard library only, SigV4 included. |
-| `ovrin/render/pdfium` | The `Renderer` seam. PDFium under WebAssembly, for rasterising PDF pages. |
-| `ovrin/otel` | Turns Ovrin hooks into OpenTelemetry spans and metrics. |
-
-Once releases are tagged, each module is versioned independently on a path-prefixed tag, and each
-declares its own Go floor.
 
 ## Go version
 
-The core module declares `go 1.22` as its language floor. Because Ovrin hands untrusted document
-bytes to `archive/zip`, `encoding/xml`, `compress/flate`, and `image/*`, build with a current patch
-release rather than the oldest toolchain that compiles.
+Every module declares `go 1.22`. That is a *language* floor, not a statement that Go 1.22.0 is safe to
+run Ovrin on.
+
+Ovrin hands attacker-controlled bytes to `archive/zip`, `encoding/xml`, `compress/flate` and `image/*`,
+so a defect in those packages is a defect in Ovrin's parsing path — and only a newer toolchain fixes it.
+**Build with the latest patch release of whichever minor version you use.** For 1.22 that means
+**1.22.4 or newer**, which fixes `GO-2024-2888`: a panic on a crafted zip central directory, reachable
+from any DOCX, XLSX or PDF Ovrin accepts.
+
+Run `govulncheck ./...` against your own build. It checks the toolchain you actually use, which is the
+only one that matters.
 
 ## What you actually need
 

@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   getDoc,
@@ -140,6 +142,34 @@ describe('heading anchors', () => {
       expect(html, heading.text).toContain(`id="${heading.id}"`);
     }
     expect(doc.headings.length).toBeGreaterThan(0);
+  });
+});
+
+describe('release status', () => {
+  // Ovrin shipped v1.0.0 on 2026-09-12, and every one of these phrases was
+  // still on the site afterwards, because nothing checked the docs against it.
+  const stale = [
+    /pre-v1/i,
+    /no release is tagged/i,
+    /not (yet )?tagged/i,
+    /will change before v1/i,
+    /replace github\.com\/BAGOMBEKA-JOB-DEV\/ovrin/i,
+  ];
+
+  const files = [
+    ...listAllContentRoutes().map((route) => resolveContentFile(route) as string),
+    'src/components/site-footer.tsx',
+    'src/components/home/hero.tsx',
+    'src/content/home/moments.ts',
+  ];
+
+  it('no page still describes Ovrin as unreleased', () => {
+    for (const file of files) {
+      const text = fs.readFileSync(path.resolve(file), 'utf8');
+      for (const pattern of stale) {
+        expect(pattern.test(text), `${file} matches ${pattern}`).toBe(false);
+      }
+    }
   });
 });
 

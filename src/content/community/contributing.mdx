@@ -5,23 +5,40 @@ description: "How to propose a change to Ovrin: the setup, the commit convention
 
 # Contributing
 
-The project expects disciplined contributions. The upstream repository also states that contributors should read the engineering rules and contribution guidance before making changes.
+Changes to Ovrin go through its repository, and the engineering standard is the numbered
+[rules](/community/rules) — review enforces them.
+
+## What v1.0.0 changes for contributors
+
+Ovrin is at v1.0.0, so the API is stable. A pull request that changes an exported signature has a high
+bar to clear, because it would need a v2. Additions do not: a new field on a plain struct, or a new
+option, can land in a minor release.
 
 ## Core expectations
 
-- keep the library design clear and predictable
-- preserve provider independence
-- keep the core dependency-free
-- document design choices and deviations
-- use proper release and versioning discipline before broad claims
+- keep the core free of dependencies — not "few", zero
+- keep cgo out of the core entirely
+- never let document content reach an error, log line, trace or metric
+- preserve provider independence: adapters map a provider's API, they do not make decisions
+- write significant decisions down as an architecture decision record, including what they cost
 
-## Good first contribution areas
+## Mechanics
 
-- improve docs and examples
-- add evaluation corpus material
-- refine validation behavior
-- strengthen adapter testing
-- document provider limitations and feature gaps
+- run `make check` before opening a pull request — it is the same gate CI runs
+- write commits in the Conventional Commits style, on a `type/slug` branch
+- sign off every commit under the Developer Certificate of Origin
+- open an issue before contributing a new provider adapter
+
+## The most valuable contributions
+
+The API is settled, but accuracy is still unmeasured. So the contributions that help most are:
+
+- **real corpus documents the project is allowed to redistribute** — the corpus today is synthetic
+- **provider adapters**, each with its silently-ignored behaviour documented
+- **disagreement with an architecture decision record that is wrong**
+
+Because nobody outside the project has reported running Ovrin in production yet, bug reports from real
+use are unusually valuable too.
 
 ## Related
 

@@ -72,7 +72,8 @@ These come from the upstream project and are not stylistic choices:
 - No accuracy figure may be published that `eval/` cannot reproduce. The homepage previously
   showed an invented "99.2%"; it must not come back.
 - Confidence is a ranking signal, not a probability, until the weights are calibrated.
-- The project is pre-v1 with no tagged release, so `go get` does not resolve yet.
+- Ovrin is at v1.0.0 and `go get` resolves, but v1.0.0 promises the API only. The site must never
+  show the version or the word "stable" without saying that accuracy is still unmeasured.
 
 ## Execution order
 
